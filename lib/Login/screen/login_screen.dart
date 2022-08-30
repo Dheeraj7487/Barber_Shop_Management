@@ -1,8 +1,16 @@
+import 'package:barber_booking_management/Home/home_screen.dart';
+import 'package:barber_booking_management/Login/provider/login_provider.dart';
 import 'package:barber_booking_management/Login/screen/register_screen.dart';
+import 'package:barber_booking_management/Login/screen/reset_password.dart';
 import 'package:barber_booking_management/mixin/button_mixin.dart';
 import 'package:barber_booking_management/mixin/textfield_mixin.dart';
 import 'package:barber_booking_management/utils/app_color.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../../utils/app_prefrence_key.dart';
+import '../../utils/app_utils.dart';
+import '../firebase_auth/login_auth.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key? key}) : super(key: key);
@@ -17,6 +25,14 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool passwordVisibility = false;
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,10 +115,39 @@ class _LoginScreenState extends State<LoginScreen> {
                           return null;
                         }
                     ),
-                    const SizedBox(height: 40),
                     GestureDetector(
                         onTap: (){
-                          if(_formKey.currentState!.validate()){}
+                          Navigator.push(context, MaterialPageRoute(builder: (context)=>ResetPasswordScreen()));
+                        },
+                        child: Container(
+                          alignment: Alignment.topRight,
+                            padding: const EdgeInsets.all(10),
+                            child:  const Text('Reset Password'))),
+                    const SizedBox(height: 40),
+                    GestureDetector(
+                        onTap: () async{
+                          if(_formKey.currentState!.validate()){
+                            User? user = await LoginAuth.signInUsingEmailPassword(
+                              email: emailController.text.trim(),
+                              password: passwordController.text.trim(), 
+                              context: context,
+                            );
+                            if (user != null) {
+                              AppUtils.instance.setPref(PreferenceKey.boolKey, PreferenceKey.prefLogin, true);
+                              AppUtils.instance.setPref(PreferenceKey.stringKey, PreferenceKey.prefEmail, emailController.text);
+                              LoginProvider().getSharedPreferenceData(emailController.text);
+                              // Provider.of<LoginProvider>(context,listen: false).getSharedPreferenceData(emailController.text);
+
+                              Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
+                              // AppUtils.instance.setPref(PreferenceKey.boolKey, PreferenceKey.prefLogin, true);
+                              // AppUtils.instance.setPref(PreferenceKey.stringKey, PreferenceKey.prefEmail, emailController.text);
+                              // Provider.of<LoginProvider>(context,listen: false).getSharedPreferenceData(emailController.text);
+                              // if (_formKey.currentState!.validate()) {
+                              //   Provider.of<LoginProvider>(context,listen: false).getData(emailController.text);
+                              // }
+                              // Provider.of<LoadingProvider>(context,listen: false).stopLoading();
+                            }
+                          }
                         },
                         child: ButtonMixin().appButton(text: 'Login'))
 

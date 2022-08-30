@@ -1,11 +1,24 @@
+import 'package:barber_booking_management/Home/home_screen.dart';
+import 'package:barber_booking_management/Login/firebase_auth/login_auth.dart';
+import 'package:barber_booking_management/Login/provider/login_provider.dart';
 import 'package:barber_booking_management/Login/screen/login_screen.dart';
 import 'package:barber_booking_management/mixin/button_mixin.dart';
 import 'package:barber_booking_management/mixin/textfield_mixin.dart';
 import 'package:barber_booking_management/utils/app_color.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class RegisterScreen extends StatelessWidget {
-  RegisterScreen({Key? key}) : super(key: key);
+import '../../utils/app_utils.dart';
+
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({Key? key}) : super(key: key);
+
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
 
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
@@ -14,6 +27,17 @@ class RegisterScreen extends StatelessWidget {
   TextEditingController confirmPasswordController = TextEditingController();
   RegExp passwordValidation = RegExp(r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)");
   final _formKey = GlobalKey<FormState>();
+
+  // @override
+  // void dispose() {
+  //   // TODO: implement dispose
+  //   super.dispose();
+  //   nameController.dispose();
+  //   emailController.dispose();
+  //   phoneController.dispose();
+  //   passwordController.dispose();
+  //   confirmPasswordController.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +131,7 @@ class RegisterScreen extends StatelessWidget {
                   TextFieldMixin().textFieldWidget(
                     cursorColor: Colors.black,
                     controller: passwordController,
-                    textInputAction: TextInputAction.done,
+                    textInputAction: TextInputAction.next,
                     keyboardType: TextInputType.visiblePassword,
                     hintText: "Enter password",
                     prefixIcon: const Icon(Icons.lock_outline,color: AppColor.appColor),
@@ -157,8 +181,26 @@ class RegisterScreen extends StatelessWidget {
 
                   const SizedBox(height: 40),
                   GestureDetector(
-                      onTap: (){
+                      onTap: () async{
                         if(_formKey.currentState!.validate()){
+                          User? user = await LoginAuth.registerUsingEmailPassword(
+                              email: emailController.text,
+                              password: passwordController.text,
+                              name: nameController.text.trim(),
+                              mobile: phoneController.text.trim(),
+                              context: context
+                          );
+                          if (user != null) {
+                            AppUtils.instance.showToast(toastMessage: "Register Successfully");
+                            LoginProvider().addUserDetail(
+                                userName: nameController.text,
+                                userEmail: emailController.text, userMobile: phoneController.text,
+                                userImage: '', timestamp: Timestamp.now());
+                            LoginProvider().getSharedPreferenceData(emailController.text);
+                            Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const HomeScreen()));
+
+                            //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+                          }
                         }
                       },
                       child: ButtonMixin().appButton(text: 'Sign Up'))
@@ -183,7 +225,7 @@ class RegisterScreen extends StatelessWidget {
             ),
           ),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
             },
             child: Container(

@@ -18,7 +18,7 @@ class ButtonMixin {
 
     var boxDecoration = BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-      color: AppColor.beachColor4
+      color: AppColor.appColor
     );
 
     return Container(

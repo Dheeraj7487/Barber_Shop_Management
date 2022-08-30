@@ -1,10 +1,14 @@
 
 import 'dart:async';
 
+import 'package:barber_booking_management/Home/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../utils/app_color.dart';
 import '../../utils/app_image.dart';
+import '../../utils/app_prefrence_key.dart';
+import '../../utils/app_utils.dart';
 import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -16,14 +20,29 @@ class SplashScreen extends StatefulWidget {
 
 class SplashScreenState extends State<SplashScreen>{
 
+  bool isUserLogin=false;
+  String? email;
+
+  getPreferenceData()async{
+    isUserLogin= await AppUtils.instance.getPreferenceValueViaKey(PreferenceKey.prefLogin)??false;
+    email=await AppUtils.instance.getPreferenceValueViaKey(PreferenceKey.prefEmail)?? "";
+    setState(() {});
+    Timer(
+        const Duration(seconds: 3), (){
+        if(isUserLogin){
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) =>  const HomeScreen()));
+        } else{
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) =>  LoginScreen()));
+        }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-    Timer(
-        const Duration(seconds: 3), (){
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (context) =>  LoginScreen()));
-    });
+    getPreferenceData();
   }
 
   @override

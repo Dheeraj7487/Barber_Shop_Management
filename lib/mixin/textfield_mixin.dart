@@ -36,7 +36,7 @@ class TextFieldMixin {
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10)),
           focusedBorder: OutlineInputBorder(
-              borderSide: const BorderSide(color: AppColor.greyColor),borderRadius: BorderRadius.circular(10)),
+              borderSide: const BorderSide(color: AppColor.appColor),borderRadius: BorderRadius.circular(10)),
           enabledBorder:
           OutlineInputBorder(borderSide: BorderSide.none,borderRadius: BorderRadius.circular(10)),
           errorBorder: OutlineInputBorder(
