@@ -1,9 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.elsner.barber_booking_management">
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
    <application
         android:label="barber_booking_management"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+
+       <meta-data android:name="com.google.android.geo.API_KEY"
+           android:value="AIzaSyCdQfxwSzj7TlTsQSy7FeGn9vc8OizKk38"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

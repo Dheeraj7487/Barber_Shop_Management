@@ -1,4 +1,5 @@
 import 'package:barber_booking_management/Login/screen/splash_screen.dart';
+import 'package:barber_booking_management/utils/app_color.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -13,8 +14,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ButtonStyle(
+                  backgroundColor:
+                  MaterialStateProperty.all<Color>(AppColor.whiteColor))),
+          appBarTheme: const AppBarTheme(
+            color: AppColor.whiteColor,
+            elevation: 0.0,
+            centerTitle: true,
+            titleTextStyle:  TextStyle(
+              color: AppColor.appColor,
+              fontSize: 16,
+            ),
+            iconTheme:  IconThemeData(
+              color: AppColor.blackColor,
+            ),
+          ), colorScheme: ColorScheme.fromSwatch().copyWith(secondary: AppColor.appColor),
+        ),
       home: SplashScreen()
     );
   }

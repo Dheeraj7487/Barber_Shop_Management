@@ -5,6 +5,7 @@ import 'package:barber_booking_management/Login/screen/reset_password.dart';
 import 'package:barber_booking_management/mixin/button_mixin.dart';
 import 'package:barber_booking_management/mixin/textfield_mixin.dart';
 import 'package:barber_booking_management/utils/app_color.dart';
+import 'package:barber_booking_management/widget/bottom_nav_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -138,14 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               LoginProvider().getSharedPreferenceData(emailController.text);
                               // Provider.of<LoginProvider>(context,listen: false).getSharedPreferenceData(emailController.text);
 
-                              Navigator.push(context, MaterialPageRoute(builder: (context)=>HomeScreen()));
-                              // AppUtils.instance.setPref(PreferenceKey.boolKey, PreferenceKey.prefLogin, true);
-                              // AppUtils.instance.setPref(PreferenceKey.stringKey, PreferenceKey.prefEmail, emailController.text);
-                              // Provider.of<LoginProvider>(context,listen: false).getSharedPreferenceData(emailController.text);
-                              // if (_formKey.currentState!.validate()) {
-                              //   Provider.of<LoginProvider>(context,listen: false).getData(emailController.text);
-                              // }
-                              // Provider.of<LoadingProvider>(context,listen: false).stopLoading();
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>BottomNavBarScreen()));
                             }
                           }
                         },
