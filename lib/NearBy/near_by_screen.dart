@@ -1,5 +1,9 @@
+import 'package:barber_booking_management/NearBy/current_location.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
+
+import '../Firebase/firebase_collection.dart';
 
 class NearbyScreen extends StatefulWidget {
   const NearbyScreen({Key? key}) : super(key: key);
@@ -12,110 +16,65 @@ class _NearbyScreenState extends State<NearbyScreen> {
 
   late GoogleMapController mapController;
   final Set<Marker> markers = {};
-  static const LatLng location = LatLng(23.024164488251714, 72.52969479645007);
-
-  Set<Marker> getMarkers() {
-    setState(() {
-      markers.add(Marker(
-        markerId: MarkerId(location.toString()),
-        position: location,
-
-        infoWindow: const InfoWindow(
-          title: 'Elsner Technology',
-          snippet: "Shivranjani",
-        ),
-        icon: BitmapDescriptor.defaultMarker,
-      ));
-
-      markers.add(Marker(
-        markerId: MarkerId(location.toString()),
-        position: const LatLng(23.0271070903415, 72.52418723877933),
-        infoWindow: const InfoWindow(
-          title: 'Star Bazar',
-          snippet: 'Shivranjani',
-        ),
-        icon: BitmapDescriptor.defaultMarker,
-      ));
-
-      markers.add(Marker(
-        markerId: MarkerId(location.toString()),
-        position: const LatLng(23.024415378241, 72.53040256761466),
-        infoWindow: const InfoWindow(
-          title: 'Shivranjani BRTS',
-          snippet: 'Shivranjani',
-        ),
-        icon: BitmapDescriptor.defaultMarker,
-      ));
-    });
-    return markers;
-  }
-
-  Widget mapImage(String image, double lat, double long) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Image.network(image),
-      ],
-    );
-  }
-
-  Widget _buildContainer() {
-    return Align(
-      alignment: Alignment.bottomLeft,
-      child: SizedBox(
-        height: 150.0,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: <Widget>[
-            Container(
-              padding: const EdgeInsets.all(20),
-              child: mapImage("https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg", 23.0271070903415,
-                  72.52418723877933),
-            ),
-            Container(
-              padding: const EdgeInsets.all(20),
-              child: mapImage("https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg", 23.024164488251714,
-                  72.52969479645007),
-            ),
-            Container(
-              padding: const EdgeInsets.all(20),
-              child: mapImage(
-                  "https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg", 23.024415378241, 72.53040256761466),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   void initState() {
     super.initState();
-    _buildContainer();
+    FirebaseCollection().shopCollection.get().then((value) {
+      for(int i=0;i<value.docs.length;i++){
+        markers.add(Marker(markerId: MarkerId(value.docs[i].id),
+            infoWindow:  InfoWindow(title: value.docs[i]['shopName']),
+            position: LatLng(double.parse(value.docs[i]["latitude"]),double.parse(value.docs[i]["longitude"])),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueRed,
+            )),
+        );
+      }
+    });
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body:  Stack(
-          children: [
-            GoogleMap(
-              zoomGesturesEnabled: true,
-              initialCameraPosition: const CameraPosition(
-                target: location,
-                zoom: 20.0,
-              ),
-              markers: getMarkers(),
-              mapType: MapType.satellite,
-              onMapCreated: (controller) {
-                setState(() {
-                  mapController = controller;
-                });
-              },
-            ),
-            _buildContainer()
-          ],
+        body:  FutureBuilder<LocationData?>(
+            future: CurrentLocation.instance.currentLocation(),
+            builder: (context, snapshot) {
+              if(!snapshot.hasData){
+                return const Center(child: CircularProgressIndicator());
+              }else{
+                markers.add(Marker(
+                  markerId: const MarkerId("1"),
+                  onTap: (){},
+                  infoWindow: const InfoWindow(title: "You are here"),
+                  position: LatLng(snapshot.data!.latitude!,snapshot.data!.longitude!),
+                  icon: BitmapDescriptor.defaultMarkerWithHue(
+                    BitmapDescriptor.hueAzure,
+                  ),
+                ));
+                return GoogleMap(
+                  zoomGesturesEnabled: true,
+                  myLocationEnabled : true,
+                  compassEnabled: true,
+                  mapToolbarEnabled: true,
+                  tiltGesturesEnabled: true,
+                  myLocationButtonEnabled: true,
+                  indoorViewEnabled: true,
+                  trafficEnabled: true,
+                  onMapCreated: _onMapCreated,
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(snapshot.data!.latitude!,snapshot.data!.longitude!),
+                    zoom: 11.0,
+                  ),
+                  markers: markers,
+                  onTap: (latLng){},
+                );
+              }
+            }
         ),
       ),
     );

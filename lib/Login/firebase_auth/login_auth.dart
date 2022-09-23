@@ -1,5 +1,9 @@
+import 'package:barber_booking_management/utils/app_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/loading_provider.dart';
 
 class LoginAuth {
   static Future<User?> registerUsingEmailPassword({
@@ -13,6 +17,7 @@ class LoginAuth {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? user;
     try {
+      Provider.of<LoadingProvider>(context,listen: false).startLoading();
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -23,10 +28,13 @@ class LoginAuth {
       user = auth.currentUser;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        debugPrint('The password provided is too weak.');
+        AppUtils.instance.showToast(toastMessage: 'The password provided is too weak');
+        Provider.of<LoadingProvider>(context,listen: false).stopLoading();
       }
       else if (e.code == 'email-already-in-use') {
-        debugPrint('The account already exists for that email.');
+        AppUtils.instance.showToast(toastMessage: 'The account already exists for that email');
+        Provider.of<LoadingProvider>(context,listen: false).stopLoading();
+
       }
     } catch (e) {
       debugPrint('$e');
@@ -50,10 +58,10 @@ class LoginAuth {
       user = userCredential.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        debugPrint('No user found for that email.');
+        AppUtils.instance.showToast(toastMessage: 'No user found for that email');
       }
       else if (e.code == 'wrong-password') {
-        debugPrint('Wrong password provided.');
+        AppUtils.instance.showToast(toastMessage: 'Wrong password provided');
       }
     }
     return user;
@@ -61,11 +69,12 @@ class LoginAuth {
 
   Future resetPassword({required String email}) async {
     await FirebaseAuth.instance
-        .sendPasswordResetEmail(email: email).then((value) =>
-      debugPrint('sent a reset password link on your gmail account')
-    )
-        .catchError((e) =>
-      debugPrint('No user found that email')
+        .sendPasswordResetEmail(email: email).then((value) {
+      AppUtils.instance.showToast(toastMessage: 'sent a reset password link on your gmail account');
+    }
+    ).catchError((e) {
+      AppUtils.instance.showToast(toastMessage: 'No user found that email');
+    }
     );
   }
 

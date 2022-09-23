@@ -18,7 +18,7 @@ class AppUtils{
         gravity: ToastGravity.BOTTOM);
   }
 
-  showSnackBar(GlobalKey<ScaffoldState>? _scaffoldKey, BuildContext? context,
+  showSnackBar(GlobalKey<ScaffoldState>? scaffoldKey, BuildContext? context,
       String msg, {Color? color, int? duration}) {
     return ScaffoldMessenger.of(context!).showSnackBar(
       SnackBar(

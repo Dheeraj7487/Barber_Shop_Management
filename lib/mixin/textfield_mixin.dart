@@ -27,41 +27,42 @@ class TextFieldMixin {
     TextStyle? labelStyle
   }) {
     return TextFormField(
-      decoration: InputDecoration(
-          isDense: false,
-          filled: true,
-          labelText: labelText,
-          fillColor: AppColor.blackColor.withOpacity(0.1),
-          labelStyle: labelStyle,
-          border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10)),
-          focusedBorder: OutlineInputBorder(
-              borderSide: const BorderSide(color: AppColor.appColor),borderRadius: BorderRadius.circular(10)),
-          enabledBorder:
-          OutlineInputBorder(borderSide: BorderSide.none,borderRadius: BorderRadius.circular(10)),
-          errorBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: AppColor.redColor.withOpacity(0.4)),borderRadius: BorderRadius.circular(10)),
-          focusedErrorBorder: OutlineInputBorder(
-            borderSide: const BorderSide(color: AppColor.appColor),
-              borderRadius: BorderRadius.circular(10)
-          ),
-          hintText: hintText,
-          counterText: counterText,
-          errorStyle: const TextStyle(
-            fontSize: 12.0,
-
-          ),
-          prefixText: prefixText,
-          prefixIcon: prefixIcon,
-        suffixIcon: suffixIcon
-      ),
       readOnly: readOnly,
+      style: TextStyle(fontSize: 13),
       validator: validator,
       keyboardType: keyboardType,
       controller: controller,
       maxLines: maxLines,
       obscureText: obscureText,
       maxLength: maxLength,
+      decoration: InputDecoration(
+          isDense: false,
+          filled: true,
+          labelText: labelText,
+          fillColor: AppColor.textFieldColor,
+          labelStyle: TextStyle(color: AppColor.blackColor.withOpacity(0.5)),
+          hintText: hintText,
+          counterText: counterText,
+          hintStyle: TextStyle(color: AppColor.blackColor.withOpacity(0.5),fontSize: 13),
+          prefixText: prefixText,
+          prefixIcon: prefixIcon,
+          suffixIcon: suffixIcon,
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10)),
+          focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: AppColor.appColor.withOpacity(0.3)),borderRadius: BorderRadius.circular(10)),
+          enabledBorder:
+          OutlineInputBorder(borderSide: BorderSide.none,borderRadius: BorderRadius.circular(10)),
+          errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: AppColor.redColor.withOpacity(0.1)),borderRadius: BorderRadius.circular(10)),
+          focusedErrorBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: AppColor.appColor.withOpacity(0.1)),
+              borderRadius: BorderRadius.circular(10)
+          ),
+          errorStyle: const TextStyle(
+            fontSize: 12.0,
+          ),
+      ),
     );
   }
 }

@@ -26,11 +26,11 @@ class ResetPasswordScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Image.asset(AppImage.resetPassword,
-                      height: 100,width: 100,fit: BoxFit.fill),
-                  const SizedBox(height: 20,),
+                      height: 80,width: 80,fit: BoxFit.fill),
+                  const SizedBox(height: 15,),
                   const Text('Reset Your Password',style: TextStyle(fontSize: 20)),
-                  const SizedBox(height: 70,),
-                  const Text('Email',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16,color: AppColor.appColor),),
+                  const SizedBox(height: 60,),
+                  const Text('Email',style: TextStyle(fontSize: 16,color: AppColor.appColor),),
                   const SizedBox(height: 5),
                   TextFieldMixin().textFieldWidget(
                     cursorColor: Colors.black,

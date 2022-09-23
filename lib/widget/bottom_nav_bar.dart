@@ -1,9 +1,9 @@
-import 'package:barber_booking_management/Inbox/inbox_screen.dart';
 import 'package:barber_booking_management/Profile/profile_screen.dart';
 import 'package:barber_booking_management/utils/app_image.dart';
 import 'package:flutter/material.dart';
-
-import '../Appointment/appoinment_screen.dart';
+import '../Category/category_screen.dart';
+import '../Chat/chat_screen.dart';
+import '../Chat/chat_user.dart';
 import '../Home/home_screen.dart';
 import '../NearBy/near_by_screen.dart';
 import '../utils/app_color.dart';
@@ -18,13 +18,12 @@ class BottomNavBarScreen extends StatefulWidget {
 class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
 
   int _selectedIndex=0;
-  String imageUrl="https://t4.ftcdn.net/jpg/03/64/21/11/360_F_364211147_1qgLVxv1Tcq0Ohz3FawUfrtONzz8nq3e.jpg";
   List<Widget> buildScreen(){
     return [
       const HomeScreen(),
       const NearbyScreen(),
-      const AppointmentScreen(),
-      const InboxScreen(),
+      const CategoryScreen(),
+      const ChatUserScreen(),
       const ProfileScreen()
     ];
   }
@@ -44,33 +43,34 @@ class _BottomNavBarScreenState extends State<BottomNavBarScreen> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.shifting,
         currentIndex: _selectedIndex,
-        backgroundColor: AppColor.whiteColor,
+        backgroundColor: Colors.transparent,
+        selectedFontSize: 12,
         selectedLabelStyle: const TextStyle(color: AppColor.appColor),
         unselectedLabelStyle: const TextStyle(color: AppColor.blackColor,),
         selectedItemColor: AppColor.appColor,
         unselectedItemColor: AppColor.appColor,
         onTap: _onItemTapped,
         items:  [
-          const BottomNavigationBarItem(
+          BottomNavigationBarItem(
               label: "Home",
-              icon:  Icon(Icons.home_outlined,size: 26,)
+              icon:  Image.asset(AppImage.home,height: 22,width: 25,)
           ),
           BottomNavigationBarItem(
               label: "Near By",
-              icon: Image.asset(AppImage.nearBy,height: 24,width: 25,)
+              icon: Image.asset(AppImage.nearBy,height: 25,width: 25,)
           ),
           BottomNavigationBarItem(
-              label: "Appointment",
-              icon: Image.asset(AppImage.appointment,height: 24,width: 25,)
+              label: "Category",
+              icon: Image.asset(AppImage.categories,height: 24,width: 25,)
           ),
           BottomNavigationBarItem(
-              label: "Inbox",
-              icon: Image.asset(AppImage.inbox,height: 24,width: 25,)
+              label: "Chat",
+              icon: Image.asset(AppImage.chat,height: 24,width: 25,color: AppColor.appColor,)
           ),
-          const BottomNavigationBarItem(
+          BottomNavigationBarItem(
               label: "Profile",
-              icon: Icon(Icons.person_outline,size: 26,
-              )),
+              icon: Image.asset(AppImage.profile,height: 19,width: 25,)
+    ),
         ],
       ),
     );

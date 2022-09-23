@@ -1,9 +1,5 @@
-
 import 'dart:async';
-
-import 'package:barber_booking_management/Home/home_screen.dart';
 import 'package:barber_booking_management/widget/bottom_nav_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../utils/app_color.dart';
@@ -35,7 +31,7 @@ class SplashScreenState extends State<SplashScreen>{
               MaterialPageRoute(builder: (context) =>  const BottomNavBarScreen()));
         } else{
           Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) =>  LoginScreen()));
+              MaterialPageRoute(builder: (context) =>  const LoginScreen()));
         }
     });
   }
@@ -58,7 +54,7 @@ class SplashScreenState extends State<SplashScreen>{
             children: [
               const SizedBox(),
               Image.asset(AppImage.appLogo,height: 130,width: 130,fit: BoxFit.fill),
-              const Text('Barber Shop Management',textAlign: TextAlign.center,style: TextStyle(color: AppColor.summerColor2,fontSize: 22))
+              const Text('Barber Shop Management',textAlign: TextAlign.center,style: TextStyle(color: AppColor.summerColor2,fontSize: 18))
             ],
           ),
         ),
