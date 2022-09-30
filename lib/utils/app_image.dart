@@ -16,4 +16,7 @@ class AppImage{
   static const menu="assets/images/menu.png";
   static const myShop="assets/images/my_shop.png";
   static const chat="assets/images/chat.png";
+  static const chatNow="assets/images/chat_now.png";
+  
+  static const butCut="assets/images/hair/bunCut.png";
 }

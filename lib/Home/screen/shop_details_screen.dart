@@ -1,9 +1,16 @@
+import 'package:barber_booking_management/Chat/chat_screen.dart';
 import 'package:barber_booking_management/utils/app_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../Appointment/Screen/appointment_book_screen.dart';
 import '../../Category/widget/review_widget.dart';
+import '../../Chat/chat_room_page.dart';
+import '../../Chat/model/chatroom_model.dart';
+import '../../Firebase/firebase_collection.dart';
+import '../../main.dart';
 import '../../utils/app_color.dart';
 import 'direction_screen.dart';
 
@@ -18,16 +25,30 @@ class ShopDetailsScreen extends StatefulWidget{
 
 class _ShopDetailsScreenState extends State<ShopDetailsScreen> with SingleTickerProviderStateMixin{
 
+  late TabController controller;
+  final ScrollController _scrollController = ScrollController();
   final List<Widget> _tabs = const [
     Text("About"),
     Text("Rating"),
   ];
-  late TabController controller;
-  final ScrollController _scrollController = ScrollController();
+
+  String? userName;
+
+  Future shopDetailsCheck() async{
+    var shopQuerySnapshot = await FirebaseCollection().userCollection.where('userEmail',
+        isEqualTo: FirebaseAuth.instance.currentUser?.email).get();
+
+    for(var snapShot in shopQuerySnapshot.docChanges){
+      setState(() {
+        userName = snapShot.doc.get('userName');
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
+    shopDetailsCheck();
     controller = TabController(length: _tabs.length, vsync: this,initialIndex: 0);
   }
 
@@ -76,13 +97,12 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> with SingleTicker
 
                               IconButton(onPressed: (){
                                 Navigator.pop(context);
-                              }, icon: Container(
-                                  padding: const EdgeInsets.only(left: 8,right: 5,bottom: 5,top: 5),
-                                  decoration: BoxDecoration(
-                                      color: AppColor.whiteColor.withOpacity(0.3),
-                                      borderRadius: BorderRadius.circular(10)
-                                  ),
-                                  child: const Icon(Icons.arrow_back_ios,)),color: AppColor.whiteColor,iconSize: 24),
+                              }, icon: ClipOval(
+                                child: Container(
+                                    color: AppColor.whiteColor.withOpacity(0.6),
+                                    padding: const EdgeInsets.only(left: 8,right: 5,bottom: 5,top: 5),
+                                    child: const Icon(Icons.arrow_back_ios,)),
+                              ),color: AppColor.appColor,iconSize: 24),
 
                               Positioned(
                                 left: 20,bottom: 10,right: 10,
@@ -121,28 +141,78 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> with SingleTicker
                             padding: const EdgeInsets.only(left: 20.0,right: 20),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Visibility(
-                                  visible : widget.snapshotData['webSiteUrl'] != '' ? true : false,
-                                  child: GestureDetector(
-                                    onTap: () async {
-                                      String url = widget.snapshotData['webSiteUrl'];
-                                      if (await canLaunch(url)) {
-                                        await launch(url);
-                                      } else {
-                                        throw 'Could not launch $url';
-                                      }
+                                 if(widget.snapshotData['currentUser'] != FirebaseAuth.instance.currentUser?.email)...{
+                                   GestureDetector(
+                                     onTap: () async {
+                                       //  String url = widget.snapshotData['webSiteUrl'];
+                                       //  if (await canLaunch(url)) {
+                                       //    await launch(url);
+                                       //  } else {
+                                       //    throw 'Could not launch $url';
+                                       //  }
+                                       //Navigator.push(context, MaterialPageRoute(builder: (context)=>ContactUsScreen()));
+
+                                       Future<ChatRoomModel?> getChatroomModel() async {
+                                         ChatRoomModel? chatRoom;
+
+                                         QuerySnapshot snapshot1 = await FirebaseFirestore.instance.collection("chatrooms").
+                                         where("participants.${FirebaseAuth.instance.currentUser?.uid}", isEqualTo: true).
+                                         where("participants.${widget.snapshotData['uid']}", isEqualTo: true).get();
+
+                                         if(snapshot1.docs.length > 0) {
+                                           var docData = snapshot1.docs[0].data();
+                                           ChatRoomModel existingChatroom = ChatRoomModel.fromMap(docData as Map<String, dynamic>);
+                                           chatRoom = existingChatroom;
+                                         }
+                                         else {
+                                           ChatRoomModel newChatroom = ChatRoomModel(
+                                             chatroomid: uuid.v1(),
+                                             chatUserName1: userName,
+                                             chatUserName2: widget.snapshotData['userName'],
+                                             lastMessage: "",
+                                             chatUser1: FirebaseAuth.instance.currentUser?.email,
+                                             chatUser2: widget.snapshotData['currentUser'],
+                                             lastMessageTime: DateTime.now().toString(),
+                                             participants: {
+                                               FirebaseAuth.instance.currentUser!.uid.toString(): true,
+                                               widget.snapshotData['uid']: true,
+                                             },
+                                           );
+
+                                           await FirebaseFirestore.instance.collection("chatrooms").doc(newChatroom.chatroomid).set(newChatroom.toMap());
+
+                                           chatRoom = newChatroom;
+                                           debugPrint("New Chatroom Created");
+                                         }
+                                         return chatRoom;
+                                       }
+
+                                       ChatRoomModel? chatroomModel = await getChatroomModel();
+                                       if(chatroomModel != null) {
+                                         Navigator.push(context, MaterialPageRoute(
+                                             builder: (context) {
+                                               return ChatRoomPage(
+                                                 snapshotUserName: widget.snapshotData['userName'],
+                                                 chatroom: chatroomModel,
+                                                getOpenentUserEmail: widget.snapshotData['currentUser'],
+                                                // myUserName: userName,
+                                               );
+                                             }
+                                         ));
+                                       }
+
                                      },
-                                    child: Column(
-                                      children: [
-                                        Image.asset(AppImage.website,height: 30,width: 30),
-                                        const SizedBox(height: 5),
-                                        const Text('Website')
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                                     child: Column(
+                                       children: [
+                                         Image.asset(AppImage.chatNow,height: 30,width: 30),
+                                         const SizedBox(height: 5),
+                                         const Text('Chat Now')
+                                       ],
+                                     ),
+                                   ),
+                                 },
                                 GestureDetector(
                                   onTap: () async {
                                     final launchUri = Uri(
@@ -161,13 +231,33 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> with SingleTicker
                                   ),
                                 ),
                                 GestureDetector(
-                                  onTap: (){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>
-                                        DirectionScreen(longitude: widget.snapshotData['longitude'],
-                                          latitude: widget.snapshotData['latitude'],
-                                          shopName: widget.snapshotData['shopName'],
-                                          shopAddress: widget.snapshotData['address'],
-                                        )));
+                                  onTap: () async {
+
+                                    final String googleMapsUrl = "comgooglemaps://?center=${widget.snapshotData['latitude']},${widget.snapshotData['longitude']}";
+                                    final String appleMapsUrl = "https://maps.apple.com/?q=${widget.snapshotData['latitude']},${widget.snapshotData['longitude']}";
+
+                                    if (await canLaunch(googleMapsUrl)) {
+                                      await launch(googleMapsUrl);
+                                    }
+                                    if (await canLaunch(appleMapsUrl)) {
+                                      await launch(appleMapsUrl, forceSafariVC: false);
+                                    } else {
+                                      throw "Couldn't launch URL";
+                                    }
+
+                                    // var uri = Uri.parse("google.navigation:q=${widget.snapshotData['latitude']},"
+                                    //     "${widget.snapshotData['longitude']}&mode=d");
+                                    // if (await canLaunch(uri.toString())) {
+                                    //   await launch(uri.toString());
+                                    // } else {
+                                    //   throw 'Could not launch ${uri.toString()}';
+                                    // }
+                                    // Navigator.push(context, MaterialPageRoute(builder: (context)=>
+                                    //     DirectionScreen(longitude: widget.snapshotData['longitude'],
+                                    //       latitude: widget.snapshotData['latitude'],
+                                    //       shopName: widget.snapshotData['shopName'],
+                                    //       shopAddress: widget.snapshotData['address'],
+                                    //     )));
                                   },
                                   child: Column(
                                     children:  [

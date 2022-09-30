@@ -1,14 +1,16 @@
 import 'dart:async';
-
 import 'package:barber_booking_management/Home/widget/best_salon_service_widget.dart';
 import 'package:barber_booking_management/Home/widget/choose_barber_widget.dart';
 import 'package:barber_booking_management/Home/widget/popular_category_widget.dart';
+import 'package:barber_booking_management/Profile/screen/edit_profile_screen.dart';
 import 'package:barber_booking_management/utils/app_color.dart';
 import 'package:barber_booking_management/utils/app_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../Addshop/add_shop_screen.dart';
 import '../Firebase/firebase_collection.dart';
+import '../mixin/button_mixin.dart';
+import '../utils/app_image.dart';
 import '../utils/app_prefrence_key.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,22 +22,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  //var shopQuerySnapshot;
-  String? userName,userImage,userType;
+  String? userName,userImage,userType,userEmail;
 
   Future shopDetailsCheck() async{
    var shopQuerySnapshot = await FirebaseCollection().userCollection.where('userEmail',
         isEqualTo: FirebaseAuth.instance.currentUser?.email).get();
 
-   var share = await AppUtils.instance.getPreferenceValueViaKey(PreferenceKey.prefEmail);
-    debugPrint('Share Pref => $share');
-    debugPrint('Current User => ${FirebaseAuth.instance.currentUser?.email}');
-    for(var snapShot in shopQuerySnapshot.docChanges){
+   for(var snapShot in shopQuerySnapshot.docChanges){
       setState(() {
         userName = snapShot.doc.get('userName');
         userImage = snapShot.doc.get('userImage');
+        userEmail = snapShot.doc.get('userEmail');
         userType = snapShot.doc.get('userType');
-        debugPrint('user => $userName');
       });
     }
   }
@@ -49,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-     var hour = DateTime.now().hour;
+    var hour = DateTime.now().hour;
 
     return SafeArea(
       child: Scaffold(
@@ -89,18 +87,84 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ],
                                 ),
                               ),
-                              ClipOval(
-                                  child: userImage == "" ? Container(
-                                      color: AppColor.appColor,
-                                      height: 40,width: 40,child: Center(
-                                    child: Text('${userName?.substring(0,1).toUpperCase()}',
-                                      style: const TextStyle(color: AppColor.whiteColor),
-                                    ),) ):
-                                  userImage != null ? Image.network(
-                                      '$userImage',
-                                      height: 40,
-                                      width: 40,
-                                      fit: BoxFit.fill) : const SizedBox()
+                              GestureDetector(
+                                onTap: (){
+                                  showDialog(context: context, builder: (BuildContext context){
+                                    return AlertDialog(
+                                      actionsAlignment: MainAxisAlignment.center,
+                                      actions: [
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            const SizedBox(height: 10),
+                                            Row(
+                                              children: [
+                                                ClipOval(
+                                                    child: userImage == "" ? Container(
+                                                        color: AppColor.appColor,
+                                                        height: 40,width: 40,child: Center(
+                                                      child: Text('${userName?.substring(0,1).toUpperCase()}',
+                                                        style: const TextStyle(color: AppColor.whiteColor),
+                                                      ),) ):
+                                                    userImage != null ? Image.network(
+                                                        '$userImage',
+                                                        height: 40,
+                                                        width: 40,
+                                                        fit: BoxFit.fill) : const SizedBox()
+                                                ),
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.fromLTRB(20.0,0,10,0),
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                      children: [
+                                                        Text('$userName'),
+                                                        const SizedBox(height: 3,),
+                                                        Text('${FirebaseAuth.instance.currentUser?.email}'
+                                                          ,style: const TextStyle(fontSize: 12),),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 20),
+                                            GestureDetector(
+                                                onTap: (){
+                                                  Navigator.pop(context);
+                                                  Navigator.push(context, MaterialPageRoute(builder: (context)=> const EditProfileScreen()));
+                                                },
+                                                child: Container(
+                                                  width: double.infinity,
+                                                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                                                  decoration: BoxDecoration(
+                                                    color: AppColor.beachColor3,
+                                                    borderRadius: BorderRadius.circular(10)
+                                                  ),
+                                                  child: const Text('Edit Your Profile',
+                                                  style: TextStyle(fontSize: 12),textAlign: TextAlign.center,),
+                                                )),
+                                            const SizedBox(height: 10),
+                                          ],
+                                        )
+                                      ],
+                                    );
+                                  });
+                                },
+                                child: ClipOval(
+                                    child: userImage == "" ? Container(
+                                        color: AppColor.appColor,
+                                        height: 40,width: 40,child: Center(
+                                      child: Text('${userName?.substring(0,1).toUpperCase()}',
+                                        style: const TextStyle(color: AppColor.whiteColor),
+                                      ),) ):
+                                    userImage != null ? Image.network(
+                                        '$userImage',
+                                        height: 40,
+                                        width: 40,
+                                        fit: BoxFit.fill) : const SizedBox()
+                                ),
                               ),
 
                             ],
@@ -112,7 +176,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
-
               const BestSalonServiceWidget(),
               const ChooseBarberWidget(),
               const PopularCategoryWidget()

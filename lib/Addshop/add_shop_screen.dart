@@ -45,7 +45,7 @@ class _AddShopScreenState extends State<AddShopScreen> {
   TextEditingController barberContactController = TextEditingController();
   TextEditingController shopEmailController = TextEditingController();
 
-  late File barberImage,shopImage,shopCoverPage;
+  File? barberImage,shopImage,shopCoverPage;
   final _formKey = GlobalKey<FormState>();
   final addPlaceController=TextEditingController();
   final Set<Marker> markers = {};
@@ -58,8 +58,8 @@ class _AddShopScreenState extends State<AddShopScreen> {
   }
 
   void uploadFile(context) async {
+    Provider.of<LoadingProvider>(context,listen: false).startLoading();
     var providerData = Provider.of<AddShopProvider>(context,listen: false);
-
     //Store Image in firebase database
     if (Provider.of<AddShopProvider>(context,listen: false).barberFile == null) return;
     final barberImageDestination = 'barber/${providerData.barberImageName}';
@@ -113,63 +113,68 @@ class _AddShopScreenState extends State<AddShopScreen> {
             userName: snapshot.doc.get('userName'),
             userEmail: '${FirebaseAuth.instance.currentUser?.email}',
             uId: snapshot.doc.get('uid'),
+            fcmToken: snapshot.doc.get('fcmToken'),
             userMobile: snapshot.doc.get('userMobile'),
             userImage: snapshot.doc.get('userImage'),
           userType: snapshot.doc.get('userType')
         );
+
+        AddShopDetailFirebase().
+        addShopDetail(
+            uId: FirebaseAuth.instance.currentUser!.uid,
+            userName: snapshot.doc.get('userName'),
+            shopName: shopNameController.text,
+            shopDescription: shopDescriptionController.text,
+            rating: 1.0,
+            status: 'OPEN',
+            openingHour: pickedOpeningTime!.format(context).toString(),
+            closingHour: pickedClosingTime!.format(context).toString(),
+            barberName: barberNameController.text,
+            currentUser: '${FirebaseAuth.instance.currentUser?.email}',
+            hairCategory: Provider.of<AddShopProvider>(context,listen: false).selectHairStyle.toString(),
+            price: priceController.text,
+            longitudeShop: Provider.of<AddShopProvider>(context,listen: false).longitude,
+            latitudeShop: Provider.of<AddShopProvider>(context,listen: false).latitude,
+            contactNumber: contactController.text,
+            webSiteUrl: websiteController.text,
+            gender: Provider.of<AddShopProvider>(context,listen: false).selectGender.toString(),
+            address: addressController.text,
+            coverPageImage: coverImageUrl,
+            barberImage: barberImageUrl, shopImage: shopImageUrl,
+            timestamp: Timestamp.now(), shopEmail: shopEmailController.text);
+
+        AddShopDetailFirebase().
+        addBarberDetail(
+            uId: FirebaseAuth.instance.currentUser!.uid,
+            userName: snapshot.doc.get('userName'),
+            shopName: shopNameController.text,
+            shopDescription: shopDescriptionController.text,
+            rating: 1.0,
+            status: 'OPEN',
+            openingHour: pickedOpeningTime!.format(context).toString(),
+            closingHour: pickedClosingTime!.format(context).toString(),
+            barberName: barberNameController.text,
+            currentUser: '${FirebaseAuth.instance.currentUser?.email}',
+            hairCategory: Provider.of<AddShopProvider>(context,listen: false).selectHairStyle.toString(),
+            price: priceController.text,
+            longitudeShop: Provider.of<AddShopProvider>(context,listen: false).longitude,
+            latitudeShop: Provider.of<AddShopProvider>(context,listen: false).latitude,
+            contactNumber: contactController.text,
+            webSiteUrl: websiteController.text,
+            gender: 'Male',
+            address: addressController.text,
+            coverPageImage: coverImageUrl,
+            barberImage: barberImageUrl, shopImage: shopImageUrl,
+            timestamp: Timestamp.now(), shopEmail: shopEmailController.text);
       }
-      AddShopDetailFirebase().
-      addShopDetail(
-        shopName: shopNameController.text,
-        shopDescription: shopDescriptionController.text,
-        rating: 1.0,
-        status: 'OPEN',
-        openingHour: pickedOpeningTime!.format(context).toString(),
-        closingHour: pickedClosingTime!.format(context).toString(),
-        barberName: barberNameController.text,
-        currentUser: '${FirebaseAuth.instance.currentUser?.email}',
-        hairCategory: Provider.of<AddShopProvider>(context,listen: false).selectHairStyle.toString(),
-        price: priceController.text,
-        longitudeShop: Provider.of<AddShopProvider>(context,listen: false).longitude,
-        latitudeShop: Provider.of<AddShopProvider>(context,listen: false).latitude,
-        contactNumber: contactController.text,
-        webSiteUrl: websiteController.text,
-        gender: Provider.of<AddShopProvider>(context,listen: false).selectGender.toString(),
-        address: addressController.text,
-        coverPageImage: coverImageUrl,
-        barberImage: barberImageUrl, shopImage: shopImageUrl,
-        timestamp: Timestamp.now(), shopEmail: shopEmailController.text);
-
-      AddShopDetailFirebase().
-      addBarberDetail(
-          shopName: shopNameController.text,
-          shopDescription: shopDescriptionController.text,
-          rating: 1.0,
-          status: 'OPEN',
-          openingHour: pickedOpeningTime!.format(context).toString(),
-          closingHour: pickedClosingTime!.format(context).toString(),
-          barberName: barberNameController.text,
-          currentUser: '${FirebaseAuth.instance.currentUser?.email}',
-          hairCategory: Provider.of<AddShopProvider>(context,listen: false).selectHairStyle.toString(),
-          price: priceController.text,
-          longitudeShop: Provider.of<AddShopProvider>(context,listen: false).longitude,
-          latitudeShop: Provider.of<AddShopProvider>(context,listen: false).latitude,
-          contactNumber: contactController.text,
-          webSiteUrl: websiteController.text,
-          gender: 'Male',
-          address: addressController.text,
-          coverPageImage: coverImageUrl,
-          barberImage: barberImageUrl, shopImage: shopImageUrl,
-          timestamp: Timestamp.now(), shopEmail: shopEmailController.text);
-
-      Provider.of<LoadingProvider>(context,listen: false).startLoading();
-
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) =>
           const BottomNavBarScreen()), (Route<dynamic> route) => false);
+      Provider.of<LoadingProvider>(context,listen: false).stopLoading();
     } catch (e) {
       debugPrint('Failed to upload image');
+      Provider.of<LoadingProvider>(context,listen: false).stopLoading();
     }
   }
 
@@ -184,9 +189,9 @@ class _AddShopScreenState extends State<AddShopScreen> {
               colorScheme: const ColorScheme.light().copyWith(
                 primary: AppColor.appColor,
               ),
-            ), child: MediaQuery(
-              data:
-              MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+            ),
+            child: MediaQuery(
+              data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
               child: child!,
             ),
           );
@@ -633,10 +638,13 @@ class _AddShopScreenState extends State<AddShopScreen> {
                     const SizedBox(height: 20),
                     GestureDetector(
                         onTap: () {
-                          print(AddShopProvider().stateList);
                           if(_formKey.currentState!.validate())
                           {
-                            uploadFile(context);
+                            if(snapshot.barberFile != null && snapshot.shopImage != null && snapshot.coverShopImage != null){
+                              uploadFile(context);
+                            } else {
+                              AppUtils.instance.showToast(toastMessage: 'All field is required');
+                            }
                           }
                         },
                         child: ButtonMixin().appButton(text: 'Add Shop'))

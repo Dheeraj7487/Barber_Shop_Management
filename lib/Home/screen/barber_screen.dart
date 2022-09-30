@@ -21,11 +21,11 @@ class BarberScreen extends StatelessWidget {
                   stream: FirebaseCollection().barberCollection.snapshots(),
                   builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Object?>> snapshot)  {
                     if(snapshot.connectionState == ConnectionState.waiting){
-                      return const CircularProgressIndicator();
+                      return const Center(child: CircularProgressIndicator());
                     }else if (snapshot.hasError) {
                       return const Center(child: Text("Something went wrong"));
                     } else if (!snapshot.hasData) {
-                      return const CircularProgressIndicator();
+                      return const Center(child: const CircularProgressIndicator());
                     } else if (snapshot.requireData.docChanges.isEmpty){
                       return const Center(child: Text("No Data Found"));
                     } else {

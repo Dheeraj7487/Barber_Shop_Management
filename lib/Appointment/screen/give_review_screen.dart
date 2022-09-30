@@ -28,7 +28,7 @@ class _GiveReviewScreenState extends State<GiveReviewScreen> {
   double sum = 0.0;
   List ratingList = [];
 
-  late String shopName, shopDescription,status,
+  late String uId,userName,shopName, shopDescription,status,
   openingHour,closingHour,shopEmail,
   barberName, currentUser,
   hairCategory,price,
@@ -85,6 +85,8 @@ class _GiveReviewScreenState extends State<GiveReviewScreen> {
                       }
                     }
                     for(var shopSnapshot in queryShopSnapshots.docChanges){
+                      uId = snapshot.doc.get('uid');
+                      userName = snapshot.doc.get('userName');
                       shopName = shopSnapshot.doc.get('shopName');
                       shopDescription = shopSnapshot.doc.get('shopDescription');
                       status = shopSnapshot.doc.get('shopStatus');
@@ -107,6 +109,7 @@ class _GiveReviewScreenState extends State<GiveReviewScreen> {
                       webSiteUrl= shopSnapshot.doc.get('webSiteUrl');
                     }
                     AddShopDetailFirebase().addShopDetail(
+                      userName: userName,uId: uId,
                         shopName: shopName, shopDescription: shopDescription,
                         rating: rating, status: status,
                         openingHour: openingHour, closingHour: closingHour,

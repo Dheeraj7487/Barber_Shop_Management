@@ -12,6 +12,7 @@ class TextFieldMixin {
     void Function()? onTap,
     Widget? suffixIcon,
     InputBorder? border,
+    Color? fillColor,
     int? maxLines = 1,
     int? maxLength,
     String? prefixText,
@@ -28,13 +29,15 @@ class TextFieldMixin {
   }) {
     return TextFormField(
       readOnly: readOnly,
-      style: TextStyle(fontSize: 13),
+      cursorColor: Colors.black,
+      style: const TextStyle(fontSize: 13),
       validator: validator,
       keyboardType: keyboardType,
       controller: controller,
       maxLines: maxLines,
       obscureText: obscureText,
       maxLength: maxLength,
+      minLines: 1,
       decoration: InputDecoration(
           isDense: false,
           filled: true,

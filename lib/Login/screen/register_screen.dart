@@ -11,6 +11,7 @@ import 'package:barber_booking_management/widget/bottom_nav_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -36,12 +37,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
   RegExp passwordValidation = RegExp(r"(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W)");
   final _formKey = GlobalKey<FormState>();
   File? file;
-  // late UserCredential userCredential;
+  bool passwordVisibility = false,confirmPasswordVisibility = false;
+  String? fcmToken;
 
   @override
   void initState() {
     // TODO: implement initState
     Provider.of<LoginProvider>(context,listen: false).onWillPop(context);
+    FirebaseMessaging.instance.getToken().then((value) {
+      debugPrint('Token: $value');
+      setState(() {
+        fcmToken = value;
+      });
+    });
     super.initState();
   }
 
@@ -84,6 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           password: passwordController.text,
           name: nameController.text.trim(),
           mobile: phoneController.text.trim(),
+          fcmToken: fcmToken.toString(),
           context: context
       );
       if (user != null) {
@@ -91,6 +100,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           uId: FirebaseAuth.instance.currentUser!.uid,
             userName: nameController.text,
             userEmail: emailController.text, userMobile: phoneController.text,
+            fcmToken: fcmToken.toString(),
             userImage: imageUrl, timestamp: Timestamp.now(),
             shopDescription: '', barberImage: '', webSiteUrl: '',
             status: '', barberName: '',
@@ -121,7 +131,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        backgroundColor: AppColor.whiteColor,
         body: Center(
           child: SingleChildScrollView(
             child: Form(
@@ -135,15 +144,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                     const Text(
                       "Register",
-                      textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 24),
                     ),
                     const SizedBox(height: 10),
                     const Text(
                       'Please sign up to continue',
-                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: AppColor.greyColor,fontSize: 12
+                      ),
                     ),
-                    const SizedBox(height: 50),
+                    const SizedBox(height: 40),
 
                     Center(
                       child: Stack(
@@ -157,22 +167,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 child: file == null ?
                                 Image.asset(
                                     AppImage.user,
-                                    height: 80,
-                                    width: 80,
+                                    height: 70,
+                                    width: 70,
                                     fit: BoxFit.fill) :
                                 Image.file(
                                   file!,
-                                  height: 80,width: 80,
+                                  height: 70,width: 70,
                                   fit: BoxFit.fill,),
                               ),
                             ),
                             Positioned(
-                              left: 60,
-                              top: 50,
+                              left: 50,
+                              top: 40,
                               child: ClipOval(
                                   child: Container(
-                                    height: 30,width: 30,
-                                    color:Colors.white,child: const Icon(Icons.camera_alt,color: AppColor.appColor,size: 22,),)),
+                                    height: 25,width: 25,
+                                    color:Colors.white,child: const Icon(Icons.camera_alt,color: AppColor.appColor,size: 20,),)),
                             )
                           ]
                       ),
@@ -181,7 +191,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const Text('Full Name',style: TextStyle(color: AppColor.appColor),),
                     const SizedBox(height: 5),
                     TextFieldMixin().textFieldWidget(
-                        cursorColor: Colors.black,
                         controller: nameController,
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.text,
@@ -201,7 +210,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const Text('Email',style: TextStyle(color: AppColor.appColor),),
                     const SizedBox(height: 5),
                     TextFieldMixin().textFieldWidget(
-                        cursorColor: Colors.black,
                         controller: emailController,
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.emailAddress,
@@ -209,11 +217,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         prefixIcon: const Icon(Icons.email_outlined,color: AppColor.appColor),
                         validator: (value) {
                           if (value!.isEmpty ||
-                              value.trim().isEmpty ||
-                              !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@"
-                              r"[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                  .hasMatch(value)) {
-                            return 'Enter a valid email';
+                              value.trim().isEmpty) {
+                            return 'Please enter an email';
+                          } else if(!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@"
+                          r"[a-zA-Z0-9]+\.[a-zA-Z]+")
+                              .hasMatch(value)){
+                            return 'Please enter valid email';
                           }
                           return null;
                         },
@@ -222,7 +231,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const Text('Mobile Number',style: TextStyle(color: AppColor.appColor),),
                     const SizedBox(height: 5),
                     TextFieldMixin().textFieldWidget(
-                      cursorColor: Colors.black,
                       controller: phoneController,
                       textInputAction: TextInputAction.next,
                       keyboardType: TextInputType.phone,
@@ -238,15 +246,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                     ),
                     const SizedBox(height: 20),
-                    const Text('User Type',style: TextStyle(color: AppColor.appColor),),
+                    const Text('User Type',style: TextStyle(color: AppColor.appColor)),
                     const SizedBox(height: 5),
                     Consumer<LoginProvider>(
                         builder: (BuildContext context, snapshot, Widget? child) {
                         return Container(
                           padding: const EdgeInsets.only(left: 20,top: 5,bottom: 5,right: 20),
                           decoration: BoxDecoration(
-                            color: AppColor.blackColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(10)
+                            color: AppColor.textFieldColor,
+                            borderRadius: BorderRadius.circular(10),
                           ),
 
                           child: DropdownButtonFormField(
@@ -276,7 +284,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   value: userType,
                                   child: Row(
                                     children: [
-                                      Text(userType)
+                                      Text(userType,style: const TextStyle(fontSize: 12),)
                                     ],
                                   )
                               );
@@ -287,16 +295,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
 
                     const SizedBox(height: 20),
-                    const Text('Password',style: TextStyle(color: AppColor.appColor),),
+                    const Text('Password',style: TextStyle(color: AppColor.appColor)),
                     const SizedBox(height: 5),
                     TextFieldMixin().textFieldWidget(
-                      cursorColor: Colors.black,
                       controller: passwordController,
                       textInputAction: TextInputAction.next,
                       keyboardType: TextInputType.visiblePassword,
                       hintText: "Enter password",
+                      obscureText: passwordVisibility ? false : true,
                       prefixIcon: const Icon(Icons.lock_outline,color: AppColor.appColor),
-                      suffixIcon: const Icon(Icons.visibility_off_outlined),
+                      suffixIcon: IconButton(
+                          highlightColor: Colors.transparent,
+                          onPressed: () {
+                            setState(() {
+                              passwordVisibility = !passwordVisibility;
+                            });
+                          },
+                          icon: passwordVisibility ? const Icon(
+                            Icons.visibility, color: AppColor.appColor,
+                          ) : const Icon(Icons.visibility_off,
+                              color: AppColor.appColor)),
                       validator: (value) {
                         if (value!.isEmpty || value.trim().isEmpty) {
                           return 'Enter valid password';
@@ -314,13 +332,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const Text('Confirm Password',style: TextStyle(color: AppColor.appColor),),
                     const SizedBox(height: 5),
                     TextFieldMixin().textFieldWidget(
-                      cursorColor: Colors.black,
                       controller: confirmPasswordController,
                       textInputAction: TextInputAction.done,
                       keyboardType: TextInputType.visiblePassword,
                       hintText: "Enter password",
+                      obscureText: confirmPasswordVisibility ? false : true,
                       prefixIcon: const Icon(Icons.lock_outline,color: AppColor.appColor),
-                      suffixIcon: const Icon(Icons.visibility_off_outlined),
+                      suffixIcon: IconButton(
+                          highlightColor: Colors.transparent,
+                          onPressed: () {
+                            setState(() {
+                              confirmPasswordVisibility = !confirmPasswordVisibility;
+                            });
+                          },
+                          icon: confirmPasswordVisibility ? const Icon(
+                            Icons.visibility, color: AppColor.appColor,
+                          ) : const Icon(Icons.visibility_off,
+                              color: AppColor.appColor)),
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Enter confirm password!';
@@ -352,6 +380,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 email: emailController.text,
                                 password: passwordController.text,
                                 name: nameController.text.trim(),
+                                fcmToken: fcmToken.toString(),
                                 mobile: phoneController.text.trim(),
                                 context: context
                             );
@@ -359,6 +388,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               AppUtils.instance.showToast(toastMessage: "Register Successfully");
                               LoginProvider().addUserDetail(
                                   userName: nameController.text,
+                                  fcmToken: fcmToken.toString(),
                                   userEmail: emailController.text, userMobile: phoneController.text,
                                   uId: FirebaseAuth.instance.currentUser!.uid,
                                   userImage: '', timestamp: Timestamp.now(),
@@ -389,10 +419,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         bottomNavigationBar: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.only(bottom: 25),
-              child: const Text(
-                'Already Have An Account?  ',
+            const Padding(
+              padding: const EdgeInsets.only(bottom: 10,top: 10),
+              child: Text(
+                'Already have an account?  ',
                 style: TextStyle(
                     decorationThickness: 2,
                     decoration: TextDecoration.none,
@@ -403,12 +433,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
               onTap: () {
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
               },
-              child: Container(
-                padding: const EdgeInsets.only(bottom: 25),
-                child: const Text(
-                  'Sign In',
+              child: const Padding(
+                padding: EdgeInsets.only(bottom: 10,top: 10),
+                child: Text(
+                  'LOGIN',
                   style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 15,
+                      decoration: TextDecoration.underline,
                       decorationThickness: 1,
                       color:AppColor.appColor),
                 ),

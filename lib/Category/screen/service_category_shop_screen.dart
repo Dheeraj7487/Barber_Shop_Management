@@ -22,7 +22,7 @@ class ServiceCategoryScreen extends StatelessWidget {
                 stream: FirebaseCollection().shopCollection.snapshots(),
                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot<Object?>> snapshot)  {
                   if(snapshot.connectionState == ConnectionState.waiting){
-                    return const CircularProgressIndicator();
+                    return Center(child: const CircularProgressIndicator());
                   }else if (snapshot.hasError) {
                     return const Center(child: Text("Something went wrong"));
                   } else if (!snapshot.hasData) {
@@ -66,7 +66,8 @@ class ServiceCategoryScreen extends StatelessWidget {
                                   Container(
                                     padding: const EdgeInsets.only(left: 5,right: 5),
                                     child: Text(snapshot.data?.docs[index]['shopName'],
-                                        textAlign:TextAlign.start,maxLines: 3,style: const TextStyle(fontSize: 12),),
+                                        textAlign:TextAlign.start,maxLines: 2,style: const TextStyle(fontSize: 12),
+                                      overflow: TextOverflow.ellipsis,),
                                   ),
                                   Container(
                                     padding: const EdgeInsets.only(left: 5,right: 5,top: 5),
@@ -79,7 +80,7 @@ class ServiceCategoryScreen extends StatelessWidget {
                                           allowHalfRating: true,
                                           itemCount: 5,
                                           ignoreGestures : true,
-                                          itemSize: 16,
+                                          itemSize: 14,
                                           itemBuilder: (context, _) => const Icon(
                                             Icons.star,
                                             color: Colors.amber,
@@ -88,7 +89,7 @@ class ServiceCategoryScreen extends StatelessWidget {
                                             debugPrint('$rating');
                                           },
                                         ),
-                                        const SizedBox(width: 10),
+                                        const SizedBox(width: 2),
                                         StreamBuilder(
                                             stream: FirebaseCollection().userRatingCollection.
                                             where('shopName',isEqualTo: snapshot.data?.docs[index]['shopName']).snapshots(),
@@ -103,21 +104,21 @@ class ServiceCategoryScreen extends StatelessWidget {
                                                 return const SizedBox();
                                               }  else{
                                                 return Text(ratingSnapshot.data?.docs.length != 0 ?
-                                                '( ${ratingSnapshot.data?.docs.length.toString()} )' : '',
-                                                  style: const TextStyle(fontSize: 12),);
+                                                '(${ratingSnapshot.data?.docs.length.toString()} review)' : '',
+                                                  style: const TextStyle(fontSize: 10),);
                                               }
                                             }
                                         )
                                       ],
                                     ),
                                   ),
-                                  Container(
-                                    padding: const EdgeInsets.only(left: 5,right: 5,top: 5),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 5,right: 5,top: 3),
                                     child : Text('₹ ${snapshot.data?.docs[index]['price']}',maxLines: 2,overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(color: AppColor.appColor),textAlign:TextAlign.start),
                                   ),
-                                  Container(
-                                    padding: const EdgeInsets.only(left: 5,right: 5,top: 5),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 5,right: 5,top: 3),
                                     child: Text(snapshot.data?.docs[index]['address'],maxLines: 2,overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(color: AppColor.blackColor,fontSize: 12),textAlign:TextAlign.start),
                                   ),

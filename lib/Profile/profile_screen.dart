@@ -1,6 +1,7 @@
 
 import 'package:barber_booking_management/Appointment/Screen/appointment_screen.dart';
 import 'package:barber_booking_management/Firebase/firebase_collection.dart';
+import 'package:barber_booking_management/NearBy/search_screen.dart';
 import 'package:barber_booking_management/Profile/screen/edit_profile_screen.dart';
 import 'package:barber_booking_management/Profile/screen/my_shop_screen.dart';
 import 'package:barber_booking_management/utils/app_image.dart';
@@ -25,14 +26,10 @@ class ProfileScreen extends StatelessWidget {
                 stream: FirebaseCollection().userCollection.doc(FirebaseAuth.instance.currentUser?.email).snapshots(),
                 builder: (context, AsyncSnapshot<DocumentSnapshot<Object?>> snapshot){
                   if (snapshot.hasError) {
-                    debugPrint('Something went wrong');
                     return const Text("Something went wrong");
-                  }
-                  else if (!snapshot.hasData || !snapshot.data!.exists) {
-                    debugPrint('Document does not exist');
+                  } else if (!snapshot.hasData || !snapshot.data!.exists) {
                     return const Center(child: CircularProgressIndicator());
                   } else if(snapshot.requireData.exists){
-                    debugPrint('Find Data');
                     Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
                     return data['shopName'] != '' ?
                     Column(
@@ -233,7 +230,6 @@ class ProfileScreen extends StatelessWidget {
                             ],
                           ),
                         )
-
                       ],
                     ) :
                     Column(
@@ -276,13 +272,67 @@ class ProfileScreen extends StatelessWidget {
                                 right: 5,
                                 child: GestureDetector(
                                   onTap: (){},
-                                  child: Container(
-                                      padding: const EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                          color: AppColor.whiteColor.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(10)
+                                  child: PopupMenuButton<int>(
+                                    itemBuilder: (context) => [
+                                      PopupMenuItem(
+                                        value: 1,
+                                        child: Row(
+                                          children: const [
+                                            Icon(Icons.person_outline,color: AppColor.appColor,size: 20),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Text("Edit Profile",style: TextStyle(fontSize: 13))
+                                          ],
+                                        ),
                                       ),
-                                      child: Icon(Icons.edit,color: AppColor.whiteColor.withOpacity(0.7))),
+                                      PopupMenuItem(
+                                        value: 2,
+                                        child: Row(
+                                          children: [
+                                            Image.asset(AppImage.appointment,height: 20,width: 20,),
+                                            const SizedBox(
+                                              width: 10,
+                                            ),
+                                            const Text("My Appointment",style: TextStyle(fontSize: 13))
+                                          ],
+                                        ),
+                                      ),
+                                      PopupMenuItem(
+                                        value: 3,
+                                        child: Row(
+                                          children: const [
+                                            Icon(Icons.logout,color: AppColor.appColor,size: 20,),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Text("Logout",style: TextStyle(fontSize: 13))
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                    offset: const Offset(0, 37),
+                                    icon: Image.asset(AppImage.menu,height: 20,width: 17,color: AppColor.whiteColor,),
+                                    color: Colors.white,
+                                    elevation: 2,
+                                    onSelected: (value) {
+                                      if (value == 1) {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(builder: (context)=>const EditProfileScreen()));
+                                      }else if (value == 2) {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(builder: (context)=>const AppointmentScreen()));
+                                      } else if (value == 3) {
+                                        FirebaseAuth.instance.signOut();
+                                        AppUtils.instance.clearPref().then((value) =>
+                                            Navigator.pushAndRemoveUntil(
+                                                context,
+                                                MaterialPageRoute(builder: (BuildContext context) => const LoginScreen()),
+                                                ModalRoute.withName('/')
+                                            ));
+                                      }
+                                    },
+                                  ),
                                 )
                             )
                           ],
@@ -299,10 +349,13 @@ class ProfileScreen extends StatelessWidget {
                                         margin: const EdgeInsets.only(left: 10,right: 10),
                                         child: const Icon(Icons.date_range_outlined,color: AppColor.appColor)),
                                     const SizedBox(height: 5),
-                                    Container(
-                                        padding: const EdgeInsets.only(top: 10,bottom: 10),
-                                        margin: const EdgeInsets.only(left: 10,right: 10),
-                                        child: Text(data['userName'],style: const TextStyle(fontSize: 12))),
+                                    Expanded(
+                                      child: Container(
+                                          padding: const EdgeInsets.only(top: 10,bottom: 10),
+                                          margin: const EdgeInsets.only(left: 10,right: 10),
+                                          child: Text(data['userName'],style: const TextStyle(fontSize: 12),
+                                            maxLines: 1,overflow: TextOverflow.ellipsis,)),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -315,10 +368,13 @@ class ProfileScreen extends StatelessWidget {
                                         margin: const EdgeInsets.only(left: 10,right: 10),
                                         child: const Icon(Icons.email_outlined,color: AppColor.appColor,)),
                                     const SizedBox(height: 5,),
-                                    Container(
-                                        padding: const EdgeInsets.only(top: 10,bottom: 10),
-                                        margin: const EdgeInsets.only(left: 10,right: 10),
-                                        child: Text(data['userEmail'],style: const TextStyle(fontSize: 12))),
+                                    Expanded(
+                                      child: Container(
+                                          padding: const EdgeInsets.only(top: 10,bottom: 10),
+                                          margin: const EdgeInsets.only(left: 10,right: 10),
+                                          child: Text(data['userEmail'],style: const TextStyle(fontSize: 12),
+                                            maxLines: 1,overflow: TextOverflow.ellipsis,)),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -339,32 +395,6 @@ class ProfileScreen extends StatelessWidget {
                                 ),
                               ),
 
-                              const SizedBox(height: 50),
-                              Container(
-                                width: 120,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20)
-                                ),
-                                child: ElevatedButton(
-                                    onPressed: () {
-                                      FirebaseAuth.instance.signOut();
-                                      AppUtils.instance.clearPref().then((value) => Navigator.pushAndRemoveUntil(context,
-                                          MaterialPageRoute(
-                                              builder: (context) => const LoginScreen()),
-                                              (Route<dynamic> route) => false));
-                                    },
-                                    style: ButtonStyle(
-                                        backgroundColor: MaterialStateProperty.all<Color>(AppColor.appColor),
-                                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                            RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(10.0),
-                                            )
-                                        )
-                                    ),
-                                    child: const Text('Logout',style: TextStyle(fontSize: 12))
-                                ),
-                              )
                             ],
                           ),
                         )

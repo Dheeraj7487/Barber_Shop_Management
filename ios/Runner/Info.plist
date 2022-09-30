@@ -29,6 +29,13 @@
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
+
+	<string>NSLocationWhenInUseUsageDescription</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>NSLocationAlwaysUsageDescription</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+
+
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
@@ -41,6 +48,20 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+	<key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>sms</string>
+      <string>tel</string>
+      <string>navigation</string>
+    </array>
+
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>googlechromes</string>
+        <string>comgooglemaps</string>
+    </array>
+
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>

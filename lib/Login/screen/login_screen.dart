@@ -7,9 +7,10 @@ import 'package:barber_booking_management/mixin/textfield_mixin.dart';
 import 'package:barber_booking_management/utils/app_color.dart';
 import 'package:barber_booking_management/widget/bottom_nav_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import '../../Firebase/firebase_collection.dart';
 import '../../utils/app_prefrence_key.dart';
 import '../../utils/app_utils.dart';
 import '../firebase_auth/login_auth.dart';
@@ -23,30 +24,22 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
 
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  TextEditingController emailController = TextEditingController(),passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool passwordVisibility = false;
-
-  Future pref() async{
-    var share = await AppUtils.instance.getPreferenceValueViaKey(PreferenceKey.prefEmail);
-    debugPrint('Share Pref => $share');
-  }
+  String? fcmToken;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    pref();
+    FirebaseMessaging.instance.getToken().then((value) {
+      debugPrint('Token: $value');
+      setState(() {
+        fcmToken = value;
+      });
+    });
   }
-
-  // @override
-  // void dispose() {
-  //   // TODO: implement dispose
-  //   super.dispose();
-  //   emailController.dispose();
-  //   passwordController.dispose();
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +48,6 @@ class _LoginScreenState extends State<LoginScreen> {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-          backgroundColor: AppColor.whiteColor,
           body: Center(
             child: SingleChildScrollView(
               child: Form(
@@ -68,31 +60,32 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       const Text(
                         "Login",
-                        textAlign: TextAlign.center,
                         style: TextStyle(fontSize: 24),
                       ),
                       const SizedBox(height: 10),
                       const Text(
                         'Please sign in to continue',
-                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: AppColor.greyColor,fontSize: 12
+                        ),
                       ),
                       const SizedBox(height: 70),
                       const Text('Email',style: TextStyle(color: AppColor.appColor)),
                       const SizedBox(height: 5),
                       TextFieldMixin().textFieldWidget(
-                        cursorColor: Colors.black,
                         controller: emailController,
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.emailAddress,
                         hintText: "Enter email",
                         prefixIcon: const Icon(Icons.email_outlined,color: AppColor.appColor),
                         validator: (value) {
-                          if (value!.isEmpty ||
-                              value.trim().isEmpty ||
-                              !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@"
-                              r"[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                  .hasMatch(value)) {
-                            return 'Enter a valid email';
+                          if (value!.isEmpty || value.trim().isEmpty ) {
+                            return 'Please enter an email';
+                          }
+                          else if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@"
+                          r"[a-zA-Z0-9]+\.[a-zA-Z]+")
+                              .hasMatch(value)){
+                            return 'Please enter valid email';
                           }
                           return null;
                         },
@@ -102,13 +95,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       const Text('Password',style: TextStyle(color: AppColor.appColor),),
                       const SizedBox(height: 5),
                       TextFieldMixin().textFieldWidget(
-                          cursorColor: Colors.black,
                           controller: passwordController,
                           textInputAction: TextInputAction.done,
                           keyboardType: TextInputType.visiblePassword,
                           hintText: "Enter password",
                           prefixIcon: const Icon(Icons.lock_outline,color: AppColor.appColor),
-                          // suffixIcon: const Icon(Icons.visibility_off_outlined),
                         obscureText: passwordVisibility ? false : true,
                         suffixIcon: IconButton(
                             highlightColor: Colors.transparent,
@@ -117,12 +108,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 passwordVisibility = !passwordVisibility;
                               });
                             },
-                            icon: passwordVisibility
-                                ? const Icon(
-                              Icons.visibility,
-                              color: AppColor.appColor,
-                            )
-                                : const Icon(Icons.visibility_off,
+                            icon: passwordVisibility ? const Icon(
+                              Icons.visibility, color: AppColor.appColor,
+                            ) : const Icon(Icons.visibility_off,
                                 color: AppColor.appColor)),
                           validator: (value) {
                             if (value == null ||
@@ -140,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Container(
                             alignment: Alignment.topRight,
                               padding: const EdgeInsets.all(10),
-                              child:  const Text('Reset Password'))),
+                              child:  const Text('Reset Password',style: TextStyle(fontSize: 12),))),
                       const SizedBox(height: 40),
                       GestureDetector(
                           onTap: () async {
@@ -156,8 +144,33 @@ class _LoginScreenState extends State<LoginScreen> {
                                 AppUtils.instance.setPref(PreferenceKey.boolKey, PreferenceKey.prefLogin, true);
                                 AppUtils.instance.setPref(PreferenceKey.stringKey, PreferenceKey.prefEmail, emailController.text);
                                 Provider.of<LoginProvider>(context,listen:false).getSharedPreferenceData(emailController.text);
+
+                                var snapshotData = await FirebaseCollection().userCollection.
+                                where('userEmail',isEqualTo: FirebaseAuth.instance.currentUser?.email).get();
+                                for(var data in snapshotData.docChanges){
+                                  debugPrint('User Name ${data.doc.get('userEmail')}');
+                                  LoginProvider().addUserDetail(
+                                      userName: data.doc.get("userName"), userEmail: data.doc.get("userEmail"),
+                                      userMobile: data.doc.get("userMobile"), userImage: data.doc.get("userImage"),
+                                      uId: data.doc.get("uid"),
+                                      fcmToken: fcmToken.toString(),
+                                      shopName: data.doc.get("shopName"), shopDescription: data.doc.get('shopDescription'),
+                                      rating: data.doc.get('rating'), status: data.doc.get('shopStatus'),
+                                      openingHour: data.doc.get('openingHour'),
+                                      closingHour: data.doc.get('closingHour'), barberName: data.doc.get('barberName'),
+                                      currentUser: data.doc.get('currentUser'), hairCategory: data.doc.get('hairCategory'),
+                                      price: data.doc.get('price'), longitudeShop: data.doc.get('longitude'),
+                                      latitudeShop: data.doc.get('latitude'),
+                                      contactNumber: data.doc.get('contactNumber'), webSiteUrl: data.doc.get('webSiteUrl'),
+                                      gender: data.doc.get('gender'),
+                                      address: data.doc.get('address'), coverPageImage: data.doc.get('coverPageImage'),
+                                      barberImage: data.doc.get('barberImage'), shopImage: data.doc.get('shopImage'),
+                                      userType: data.doc.get('userType'), timestamp: data.doc.get('timeStamp'));
+                                  AppUtils.instance.showToast(toastMessage: "Update Profile");
+                                }
+
                                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const BottomNavBarScreen()));
-                                //Provider.of<LoadingProvider>(context,listen: false).stopLoading();
+                                Provider.of<LoadingProvider>(context,listen: false).stopLoading();
                               }
                               Provider.of<LoadingProvider>(context,listen: false).stopLoading();
                             }
@@ -172,12 +185,11 @@ class _LoginScreenState extends State<LoginScreen> {
         bottomNavigationBar: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.only(bottom: 25),
-              child: const Text(
-                'Don' "'" 't Have An Account Yet?  ',
+            const Padding(
+              padding: EdgeInsets.only(bottom: 10,top: 10),
+              child: Text(
+                'Need an account?  ',
                 style: TextStyle(
-                    decorationThickness: 2,
                     decoration: TextDecoration.none,
                     color:AppColor.blackColor),
               ),
@@ -186,12 +198,13 @@ class _LoginScreenState extends State<LoginScreen> {
               onTap: (){
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const RegisterScreen()));
               },
-              child: Container(
-                padding: const EdgeInsets.only(bottom: 25),
-                child: const Text(
-                  'Sign Up',
+              child: const Padding(
+                padding: EdgeInsets.only(bottom: 10,top: 10),
+                child: Text(
+                  'SIGN UP',
                   style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 15,
+                      decoration: TextDecoration.underline,
                       decorationThickness: 1,
                       color:AppColor.appColor),
                 ),

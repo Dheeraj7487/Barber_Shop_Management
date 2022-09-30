@@ -53,7 +53,7 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
-    Provider.of<AppointmentProvider>(context,listen: false).onWillPop;
+    Provider.of<AppointmentProvider>(context,listen: false).onWillPop(context);
     Provider.of<AppointmentProvider>(context,listen: false).eightAmTime = false;
   }
 
@@ -63,11 +63,11 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
     _razorpay.clear();
   }
 
-  void openCheckout() async {
+  void openCheckout(BuildContext context) async {
     String price = '${widget.snapshotData['price']}00';
     debugPrint('Price $price');
     var options = {
-      'key': 'rzp_live_ILgsfZCZoFIKMb',
+      'key': 'rzp_test_CphmkEBGNw9BME',
       'amount': int.parse(price),
       'name': widget.snapshotData['shopName'],
       'description': 'Description Shop',
@@ -105,6 +105,28 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
           userAppointmentTime:Provider.of<AppointmentProvider>(context,listen: false).timeSetAdd,
           timestamp: Timestamp.now());
     }
+    //showAlertDialog(context);
+    showDialog(context: context, builder: (BuildContext context){
+      return AlertDialog(
+        buttonPadding : const EdgeInsets.fromLTRB(0, 20.0, 0.0,0),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          const SizedBox(height: 10,),
+          Center(child: Image.asset(AppImage.checked,height: 50,width: 50,)),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(30,10,30,20),
+            child: Text("Successfully your appointment book",textAlign: TextAlign.center,),
+          ),
+          GestureDetector(
+              onTap: (){
+                Navigator.pop(context);
+              },
+              child: Container(
+                  color: AppColor.appColor,
+                  child: ButtonMixin().appButton(text: 'OK',)))
+        ],
+      );
+    });
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
@@ -115,78 +137,78 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
     debugPrint('External SDK Response: $response');
   }
 
-  showAlertDialog(BuildContext context) {
-    Widget cancelButton = TextButton(
-      child: const Text("Cancel",style: TextStyle(color: AppColor.whiteColor,fontSize: 12),),
-      onPressed:  () {
-        Navigator.pop(context);
-      },
-    );
-    Widget continueButton = TextButton(
-      child: const Text("Confirm",style: TextStyle(color: AppColor.whiteColor,fontSize: 12),),
-      onPressed:  () async {
-        Navigator.pop(context);
-        var userSnapShotData = await FirebaseCollection().userCollection.where('userEmail', isEqualTo: FirebaseAuth.instance.currentUser?.email).get();
-        for(var snapshotData in userSnapShotData.docs){
-          BookAppointment().bookAppointment(
-              shopName: widget.snapshotData['shopName'], shopDescription: widget.snapshotData['shopDescription'],
-              shopEmail: widget.snapshotData['shopEmail'], barberName: widget.snapshotData['barberName'],
-              hairCategory: widget.snapshotData['hairCategory'], price: widget.snapshotData['price'],
-              longitudeShop: widget.snapshotData['longitude'], latitudeShop: widget.snapshotData['latitude'],
-              contactNumber: widget.snapshotData['contactNumber'], webSiteUrl: widget.snapshotData['webSiteUrl'],
-              gender: widget.snapshotData['gender'], address: widget.snapshotData['address'],
-              coverPageImage: widget.snapshotData['coverPageImage'],
-              barberImage: widget.snapshotData['barberImage'], shopImage: widget.snapshotData['shopImage'],
-              userName: snapshotData.get('userName'), userMobile: snapshotData.get('userMobile'),
-              userEmail: snapshotData.get('userEmail'), userImage: snapshotData.get('userImage'),
-              userAppointmentDate: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10),
-              userAppointmentTime:Provider.of<AppointmentProvider>(context,listen: false).timeSetAdd,
-              timestamp: Timestamp.now());
-          Provider.of<AppointmentProvider>(context,listen: false).onWillPop(context);
-        }
-        showDialog(context: context, builder: (BuildContext context){
-          return AlertDialog(
-            actionsAlignment: MainAxisAlignment.center,
-            actions: [
-              Column(
-                children: [
-                  const SizedBox(height: 10,),
-                  Image.asset(AppImage.checked,height: 60,width: 60,),
-                  const Padding(
-                    padding: EdgeInsets.all(20.0),
-                    child: Text("Successfully your appointment done",style: TextStyle(fontSize: 18),textAlign: TextAlign.center,),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      Navigator.pop(context);
-                    },
-                      child: ButtonMixin().appButton(text: 'OK',))
-                ],
-              )
-            ],
-          );
-        });
-      },
-    );
-    AlertDialog alert = AlertDialog(
-      backgroundColor: AppColor.appColor,
-      titleTextStyle: const TextStyle(color: AppColor.whiteColor,fontSize: 18),
-      title: const Text("Book Appointment"),
-      content: const Text("Are you want to sure seat book",style: TextStyle(color: AppColor.whiteColor,fontSize: 12)),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
+  // showAlertDialog(BuildContext context) {
+  //   Widget cancelButton = TextButton(
+  //     child: const Text("Cancel",style: TextStyle(color: AppColor.whiteColor,fontSize: 12),),
+  //     onPressed:  () {
+  //       Navigator.pop(context);
+  //     },
+  //   );
+  //   Widget continueButton = TextButton(
+  //     child: const Text("Confirm",style: TextStyle(color: AppColor.whiteColor,fontSize: 12),),
+  //     onPressed:  () async {
+  //       Navigator.pop(context);
+  //       var userSnapShotData = await FirebaseCollection().userCollection.where('userEmail', isEqualTo: FirebaseAuth.instance.currentUser?.email).get();
+  //       for(var snapshotData in userSnapShotData.docs){
+  //         BookAppointment().bookAppointment(
+  //             shopName: widget.snapshotData['shopName'], shopDescription: widget.snapshotData['shopDescription'],
+  //             shopEmail: widget.snapshotData['shopEmail'], barberName: widget.snapshotData['barberName'],
+  //             hairCategory: widget.snapshotData['hairCategory'], price: widget.snapshotData['price'],
+  //             longitudeShop: widget.snapshotData['longitude'], latitudeShop: widget.snapshotData['latitude'],
+  //             contactNumber: widget.snapshotData['contactNumber'], webSiteUrl: widget.snapshotData['webSiteUrl'],
+  //             gender: widget.snapshotData['gender'], address: widget.snapshotData['address'],
+  //             coverPageImage: widget.snapshotData['coverPageImage'],
+  //             barberImage: widget.snapshotData['barberImage'], shopImage: widget.snapshotData['shopImage'],
+  //             userName: snapshotData.get('userName'), userMobile: snapshotData.get('userMobile'),
+  //             userEmail: snapshotData.get('userEmail'), userImage: snapshotData.get('userImage'),
+  //             userAppointmentDate: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10),
+  //             userAppointmentTime:Provider.of<AppointmentProvider>(context,listen: false).timeSetAdd,
+  //             timestamp: Timestamp.now());
+  //         Provider.of<AppointmentProvider>(context,listen: false).onWillPop(context);
+  //       }
+  //       showDialog(context: context, builder: (BuildContext context){
+  //         return AlertDialog(
+  //           actionsAlignment: MainAxisAlignment.center,
+  //           actions: [
+  //             Column(
+  //               children: [
+  //                 const SizedBox(height: 10,),
+  //                 Image.asset(AppImage.checked,height: 60,width: 60,),
+  //                 const Padding(
+  //                   padding: EdgeInsets.all(20.0),
+  //                   child: Text("Successfully your appointment done",style: TextStyle(fontSize: 18),textAlign: TextAlign.center,),
+  //                 ),
+  //                 GestureDetector(
+  //                   onTap: (){
+  //                     Navigator.pop(context);
+  //                   },
+  //                     child: ButtonMixin().appButton(text: 'OK',))
+  //               ],
+  //             )
+  //           ],
+  //         );
+  //       });
+  //     },
+  //   );
+  //   AlertDialog alert = AlertDialog(
+  //     backgroundColor: AppColor.appColor,
+  //     titleTextStyle: const TextStyle(color: AppColor.whiteColor,fontSize: 18),
+  //     title: const Text("Book Appointment"),
+  //     content: const Text("Are you want to sure seat book",style: TextStyle(color: AppColor.whiteColor,fontSize: 12)),
+  //     actions: [
+  //       cancelButton,
+  //       continueButton,
+  //     ],
+  //   );
+  //
+  //   // show the dialog
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return alert;
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -208,7 +230,7 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
                   width: double.infinity,height: 170,fit: BoxFit.fill),
               ),
               const SizedBox(height: 5),
-              Text('${widget.snapshotData['shopName']}'),
+              Text('${widget.snapshotData['shopName']}',maxLines: 1,overflow: TextOverflow.ellipsis,),
               const SizedBox(height: 2),
               RatingBar.builder(
                 initialRating: widget.snapshotData['rating'],
@@ -232,9 +254,9 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const Text('Price'),
+                  const Text('Price',style: TextStyle(fontSize: 12),),
                   const SizedBox(width: 10,),
-                  Text('₹ ${widget.snapshotData['price']}',style: const TextStyle(fontSize: 18,color: AppColor.redColor),),
+                  Text('₹${widget.snapshotData['price']}',style: const TextStyle(fontSize: 16,color: AppColor.redColor),),
                 ],
               ),
               const SizedBox(height: 5,),
@@ -266,7 +288,7 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
                       Container(
                         padding: const EdgeInsets.only(left: 10,right: 20,top: 15,bottom: 15),
                         decoration: BoxDecoration(
-                            color: AppColor.blackColor.withOpacity(0.1),
+                            color: AppColor.textFieldColor,
                             borderRadius: BorderRadius.circular(10)
                         ),
                         child: Row(
@@ -804,8 +826,9 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
                           appointmentSnapshot.sevenPMTime != false ||
                           appointmentSnapshot.eightPmTime != false ?
                           () async{
-                            //openCheckout();
-                              showAlertDialog(context);
+                            openCheckout(context);
+                             // showAlertDialog(context);
+
                           } : null,
                           child: ButtonMixin().appButton(text: 'Book Now')
                   );

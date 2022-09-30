@@ -95,8 +95,8 @@ class AddShopProvider extends ChangeNotifier{
 
   //Compress Image File
   Future<File> imageSizeCompress(
-      {required File image, quality = 70, percentage = 70}) async {
-    var path = await FlutterNativeImage.compressImage(image.absolute.path,quality: 100,percentage: 70);
+      {required File image, quality = 40, percentage = 50}) async {
+    var path = await FlutterNativeImage.compressImage(image.absolute.path,quality: 40,percentage: 50);
     return path;
   }
 

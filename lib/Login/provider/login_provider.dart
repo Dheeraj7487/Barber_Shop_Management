@@ -31,6 +31,7 @@ class LoginProvider extends ChangeNotifier{
         required String userEmail,
         required String userMobile,
         required String userImage,
+        required String fcmToken,
         required String shopName,
         required String shopDescription,
         required double rating,
@@ -62,6 +63,7 @@ class LoginProvider extends ChangeNotifier{
       "userName": userName.toString(),
       "userMobile": userMobile.toString(),
       "userImage": userImage.toString(),
+      "fcmToken": fcmToken.toString(),
       "shopName": shopName.toString(),
       "shopDescription": shopDescription.toString(),
       "rating": rating,
@@ -82,7 +84,6 @@ class LoginProvider extends ChangeNotifier{
       "barberImage": barberImage.toString(),
       "shopImage": shopImage.toString(),
       "userType": userType.toString(),
-
       "timeStamp" : timestamp
     };
     debugPrint('user data=> $data');

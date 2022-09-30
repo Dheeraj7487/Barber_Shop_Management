@@ -6,9 +6,12 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
+import 'package:provider/provider.dart';
 
 import '../../Addshop/provider/add_shop_provider.dart';
 import '../../Firebase/firebase_collection.dart';
+import '../../Login/provider/loading_provider.dart';
 import '../../mixin/button_mixin.dart';
 import '../../mixin/textfield_mixin.dart';
 import '../../utils/app_utils.dart';
@@ -34,6 +37,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     final formKey = GlobalKey<FormState>();
 
+    Future<File> imageSizeCompress(
+        {required File image,
+          quality = 100,
+          percentage = 10}) async {
+      var path = await FlutterNativeImage.compressImage(image.absolute.path,quality: 100,percentage: 60);
+      return path;
+    }
+
     void selectImage(BuildContext context) async{
       //Pick Image File
       FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -42,13 +53,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       );
       if(result == null) return;
       final filePath = result.files.single.path;
-      File compressImage = await AddShopProvider().imageSizeCompress(image: File(filePath!));
+      File compressImage = await imageSizeCompress(image: File(filePath!));
       setState((){
         file = compressImage;
       });
     }
 
     void uploadFile() async {
+      //_selectProfileImage(context);
+      //Store Image in firebase database
+      Provider.of<LoadingProvider>(context,listen: false).startLoading();
       if (file == null) return;
       final fireauth = FirebaseAuth.instance.currentUser?.email;
       final destination = 'images/$fireauth';
@@ -58,7 +72,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         final snapshot = await uploadsTask.whenComplete(() {});
         final imageUrl = await snapshot.ref.getDownloadURL().whenComplete(() {});
 
-        debugPrint("Image URL = $imageUrl");
         var snapshotData = await FirebaseCollection().userCollection.
         where('userEmail',isEqualTo: FirebaseAuth.instance.currentUser?.email).get();
         for(var data in snapshotData.docChanges){
@@ -67,10 +80,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               userName: nameController.text, userEmail: emailController.text,
               userMobile: mobileController.text, userImage: imageUrl,
               uId: data.doc.get("uid"),
+              fcmToken: data.doc.get("fcmToken"),
               shopName: data.doc.get("shopName"), shopDescription: data.doc.get('shopDescription'),
               rating: data.doc.get('rating'), status: data.doc.get('shopStatus'),
               openingHour: data.doc.get('openingHour'),
-              closingHour: data.doc.get('')['closingHour'], barberName: data.doc.get('barberName'),
+              closingHour: data.doc.get('closingHour'), barberName: data.doc.get('barberName'),
               currentUser: data.doc.get('currentUser'), hairCategory: data.doc.get('hairCategory'),
               price: data.doc.get('price'), longitudeShop: data.doc.get('longitude'),
               latitudeShop: data.doc.get('latitude'),
@@ -80,10 +94,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               barberImage: data.doc.get('barberImage'), shopImage: data.doc.get('shopImage'),
               userType: data.doc.get('userType'), timestamp: data.doc.get('timeStamp'));
           AppUtils.instance.showToast(toastMessage: "Update Profile");
-          Navigator.pop(context);
         }
+        Provider.of<LoadingProvider>(context,listen: false).stopLoading();
+        Navigator.pop(context);
+        debugPrint("Image URL = $imageUrl");
       } catch (e) {
         print('Failed to upload image');
+        Provider.of<LoadingProvider>(context,listen: false).stopLoading();
+
       }
     }
 
@@ -214,6 +232,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         userName: nameController.text, userEmail: emailController.text,
                                         userMobile: mobileController.text, userImage: data['userImage'],
                                         uId: data['uid'],
+                                        fcmToken: data['fcmToken'],
                                         shopName: data['shopName'], shopDescription: data['shopDescription'],
                                         rating: data['rating'], status: data['shopStatus'], openingHour: data['openingHour'],
                                         closingHour: data['closingHour'], barberName: data['barberName'],

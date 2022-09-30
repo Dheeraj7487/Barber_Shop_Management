@@ -8,9 +8,10 @@ import '../../Firebase/firebase_collection.dart';
 import '../../Appointment/Screen/give_review_screen.dart';
 
 class ReviewWidget extends StatelessWidget {
-  var snapshotData,shopName,currentUser;
+
   ReviewWidget({Key? key, required this.snapshotData,required this.shopName,required this.currentUser}) : super(key: key);
 
+  var snapshotData,shopName,currentUser;
   final ScrollController _scrollController = ScrollController();
 
   @override

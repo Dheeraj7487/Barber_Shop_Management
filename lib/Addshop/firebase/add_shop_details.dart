@@ -9,6 +9,8 @@ class AddShopDetailFirebase {
 
   Future<void> addShopDetail(
       {
+        required String uId,
+        required String userName,
         required String shopName,
         required String shopDescription,
         required double rating,
@@ -34,6 +36,8 @@ class AddShopDetailFirebase {
     DocumentReference documentReferencer =
     FirebaseCollection().shopCollection.doc('$currentUser$hairCategory');
     Map<String, dynamic> data = <String, dynamic>{
+      "userName": userName.toString(),
+      "uid": uId.toString(),
       "shopName": shopName.toString(),
       "shopDescription": shopDescription.toString(),
       "rating": rating,
@@ -72,6 +76,8 @@ class AddShopDetailFirebase {
 
   Future<void> addBarberDetail(
       {
+        required String uId,
+        required String userName,
         required String shopName,
         required String shopDescription,
         required double rating,
@@ -97,6 +103,8 @@ class AddShopDetailFirebase {
     DocumentReference documentReferencer =
     FirebaseCollection().barberCollection.doc('${FirebaseAuth.instance.currentUser?.email}$barberName');
     Map<String, dynamic> data = <String, dynamic>{
+      "userName": userName.toString(),
+      "uid": uId.toString(),
       "shopName": shopName.toString(),
       "shopDescription": shopDescription.toString(),
       "rating": rating,

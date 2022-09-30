@@ -93,9 +93,10 @@ class PopularCategoryWidget extends StatelessWidget {
                                               const SizedBox(height: 3,),
                                               Row(
                                                 children: [
-                                                  ClipOval(child: Container(height: 5,width: 5,color: AppColor.appColor,)),
-                                                  const SizedBox(width: 5,),
-                                                  Text('${snapshot.data?.docs[index]['shopStatus'].toString().toUpperCase()}',
+                                                  ClipOval(child: Container(height: 5,width: 5,color: snapshot.data?.docs[index]['shopStatus'] == 'OPEN' ?
+                                                  AppColor.appColor : AppColor.redColor,)),
+                                                  const SizedBox(width: 5),
+                                                  Text(' ${snapshot.data?.docs[index]['shopStatus'].toString().toUpperCase()}',
                                                       style:  const TextStyle(color: AppColor.blackColor,fontSize: 10),maxLines: 2,
                                                       overflow: TextOverflow.ellipsis,textAlign: TextAlign.start),
                                                 ],
@@ -108,12 +109,11 @@ class PopularCategoryWidget extends StatelessWidget {
                                                   Text('${snapshot.data?.docs[index]['openingHour']} - ${snapshot.data?.docs[index]['closingHour']}',
                                                       style:  const TextStyle(color: AppColor.blackColor,fontSize: 10),maxLines: 2,
                                                       overflow: TextOverflow.ellipsis,textAlign: TextAlign.start),
-
                                                 ],
                                               ),
                                               const SizedBox(height: 3),
                                               Text(snapshot.data?.docs[index]['hairCategory'],
-                                                  style: const TextStyle(color: AppColor.blackColor,fontSize: 10),maxLines: 2,
+                                                  style: const TextStyle(color: AppColor.blackColor,fontSize: 10),maxLines: 1,
                                                   overflow: TextOverflow.ellipsis,textAlign: TextAlign.start),
                                             ],
                                           ),
@@ -130,7 +130,7 @@ class PopularCategoryWidget extends StatelessWidget {
                                             Expanded(
                                               child: Padding(
                                                 padding: const EdgeInsets.only(right: 20,top: 2,left: 10),
-                                                child: Text('₹ ${snapshot.data?.docs[index]['price']}',
+                                                child: Text('₹${snapshot.data?.docs[index]['price']}',
                                                     style:  const TextStyle(color: AppColor.appColor,fontWeight: FontWeight.bold),
                                                     maxLines: 1,overflow: TextOverflow.ellipsis,textAlign: TextAlign.start),
                                               ),

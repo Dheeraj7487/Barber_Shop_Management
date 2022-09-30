@@ -88,15 +88,15 @@ class BestSalonServiceWidget extends StatelessWidget {
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
                                             Container(
-                                              padding: const EdgeInsets.only(left: 5,right: 10),
+                                              padding: const EdgeInsets.only(left: 5,right: 10,top: 1,bottom: 1),
                                               decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(10),
+                                                  borderRadius: BorderRadius.circular(7),
                                                   color: AppColor.whiteColor
                                               ),
                                               child: Row(
                                                 children: [
                                                   const Icon(Icons.star,color: Colors.amber,size: 20,),
-                                                  const SizedBox(width: 5),
+                                                  const SizedBox(width: 2),
                                                   Text('${snapshot.data?.docs[index]['rating']}',
                                                     style: TextStyle(fontSize: 12,color: AppColor.blackColor.withOpacity(0.6)),)
                                                 ],
@@ -119,17 +119,18 @@ class BestSalonServiceWidget extends StatelessWidget {
                                   ],
                                 ),
                                 const SizedBox(height: 5),
-                                Container(
+                                Padding(
                                   padding: const EdgeInsets.only(right: 10),
                                   child:  Text(snapshot.data?.docs[index]['shopName'],
                                       style: const TextStyle(color: AppColor.appColor),
                                       maxLines: 2,overflow: TextOverflow.ellipsis),
                                 ),
                                 const SizedBox(height: 2),
-                                Container(
+                                Padding(
                                   padding: const EdgeInsets.only(right: 10,bottom: 10),
                                   child: Text(snapshot.data?.docs[index]['hairCategory'],
-                                    style: const TextStyle(color: AppColor.blackColor,fontSize: 10,overflow: TextOverflow.ellipsis),textAlign:TextAlign.center,maxLines: 2),
+                                    style: const TextStyle(color: AppColor.blackColor,fontSize: 10,overflow: TextOverflow.ellipsis),
+                                      textAlign:TextAlign.start,maxLines: 1),
                                 ),
                               ],
                             ),

@@ -25,7 +25,7 @@ class ButtonMixin {
       padding: const EdgeInsets.only(left: 30,right: 30,top: 15,bottom: 15),
       width: double.infinity,
       decoration:boxDecoration,
-      child: Center(child: Text(text!,style: const TextStyle(letterSpacing:0.5,color: Colors.white))),
+      child: Center(child: Text(text!,style: const TextStyle(letterSpacing:0.5,color: Colors.white,fontSize: 13))),
     );
   }
 
@@ -48,7 +48,7 @@ class ButtonMixin {
           color: bgColor
       ),  child: TextButton(
       onPressed: onPress,
-      child: Text(text!,style: const TextStyle(fontSize: 12,color: AppColor.whiteColor,overflow: TextOverflow.ellipsis),),
+      child: Text(text!,style: const TextStyle(fontSize: 11,color: AppColor.whiteColor,overflow: TextOverflow.ellipsis),),
     ),
     );
   }

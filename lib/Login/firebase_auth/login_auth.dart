@@ -10,6 +10,7 @@ class LoginAuth {
     required String name,
     required String email,
     required String mobile,
+    required String fcmToken,
     required String password,
     required BuildContext context,
   })
