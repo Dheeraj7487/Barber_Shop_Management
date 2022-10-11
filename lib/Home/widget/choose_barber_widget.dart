@@ -27,7 +27,7 @@ class ChooseBarberWidget extends StatelessWidget {
             return Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 20,bottom: 5,right: 20),
+                  padding: const EdgeInsets.only(left: 20,bottom: 10,right: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -48,9 +48,9 @@ class ChooseBarberWidget extends StatelessWidget {
                         onTap: (){
                           Navigator.push(context, MaterialPageRoute(builder: (context)=>const BarberScreen()));
                         },
-                        child: Container(
-                            padding: const EdgeInsets.only(top: 5,bottom: 5,left: 5,right: 5),
-                            child: const Text('View All',style: TextStyle(color: AppColor.greyColor,fontSize: 12),)),
+                        child: const Padding(
+                            padding:  EdgeInsets.all(10),
+                            child: Text('View All',style: TextStyle(color: AppColor.greyColor,fontSize: 12),)),
                       )
                     ],
                   ),

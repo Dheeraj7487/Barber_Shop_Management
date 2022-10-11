@@ -28,7 +28,7 @@ class BestSalonServiceWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 20,bottom: 5,right: 20,top: 10),
+                  padding: const EdgeInsets.only(left: 20,bottom: 10,right: 20,top: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -49,9 +49,9 @@ class BestSalonServiceWidget extends StatelessWidget {
                         onTap: (){
                           Navigator.push(context, MaterialPageRoute(builder: (context)=>const ServiceCategoryScreen()));
                         },
-                        child: Container(
-                            padding: const EdgeInsets.only(top: 5,bottom: 5,left: 5,right: 5),
-                            child: const Text('View All',style: TextStyle(color: AppColor.greyColor,fontSize: 12))),
+                        child: const Padding(
+                            padding: EdgeInsets.all(10),
+                            child: Text('View All',style: TextStyle(color: AppColor.greyColor,fontSize: 12))),
                       )
                     ],
                   ),
@@ -97,7 +97,7 @@ class BestSalonServiceWidget extends StatelessWidget {
                                                 children: [
                                                   const Icon(Icons.star,color: Colors.amber,size: 20,),
                                                   const SizedBox(width: 2),
-                                                  Text('${snapshot.data?.docs[index]['rating']}',
+                                                  Text('${snapshot.data?.docs[index]['rating'].toString().substring(0,3)}',
                                                     style: TextStyle(fontSize: 12,color: AppColor.blackColor.withOpacity(0.6)),)
                                                 ],
                                               ),

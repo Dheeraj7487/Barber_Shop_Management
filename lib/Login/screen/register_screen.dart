@@ -136,7 +136,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Form(
               key: _formKey,
               child: Padding(
-                padding: const EdgeInsets.only(top: 40.0,left: 20,right: 20),
+                padding: const EdgeInsets.only(top: 40.0,left: 20,right: 20,bottom: 20),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,6 +235,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       textInputAction: TextInputAction.next,
                       keyboardType: TextInputType.phone,
                       hintText: "Enter Phone Number",
+                      maxLength: 10,
+                      // prefixText: '+91',
+                      counterText: '',
                       prefixIcon: const Icon(Icons.phone_android_outlined,color: AppColor.appColor),
                       validator: (value) {
                         if (value == null ||
@@ -410,42 +413,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: ButtonMixin().appButton(text: 'Sign Up')),
                     const SizedBox(height: 20),
 
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Padding(
+                          padding: const EdgeInsets.only(bottom: 10,top: 10),
+                          child: Text(
+                            'Already have an account?  ',
+                            style: TextStyle(
+                                decorationThickness: 2,
+                                decoration: TextDecoration.none,
+                                color:AppColor.blackColor),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
+                          },
+                          child: const Padding(
+                            padding: EdgeInsets.only(bottom: 10,top: 10),
+                            child: Text(
+                              'LOGIN',
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  decoration: TextDecoration.underline,
+                                  decorationThickness: 1,
+                                  color:AppColor.appColor),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+
                   ],
                 ),
               ),
             ),
           ),
-        ),
-        bottomNavigationBar: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Padding(
-              padding: const EdgeInsets.only(bottom: 10,top: 10),
-              child: Text(
-                'Already have an account?  ',
-                style: TextStyle(
-                    decorationThickness: 2,
-                    decoration: TextDecoration.none,
-                    color:AppColor.blackColor),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const LoginScreen()));
-              },
-              child: const Padding(
-                padding: EdgeInsets.only(bottom: 10,top: 10),
-                child: Text(
-                  'LOGIN',
-                  style: TextStyle(
-                      fontSize: 15,
-                      decoration: TextDecoration.underline,
-                      decorationThickness: 1,
-                      color:AppColor.appColor),
-                ),
-              ),
-            ),
-          ],
         ),
       ),
     );

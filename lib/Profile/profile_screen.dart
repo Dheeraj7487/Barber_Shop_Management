@@ -26,10 +26,12 @@ class ProfileScreen extends StatelessWidget {
                 stream: FirebaseCollection().userCollection.doc(FirebaseAuth.instance.currentUser?.email).snapshots(),
                 builder: (context, AsyncSnapshot<DocumentSnapshot<Object?>> snapshot){
                   if (snapshot.hasError) {
-                    return const Text("Something went wrong");
-                  } else if (!snapshot.hasData || !snapshot.data!.exists) {
+                    return const Center(child: Text("Something went wrong"));
+                  }
+                  else if (!snapshot.hasData || !snapshot.data!.exists) {
                     return const Center(child: CircularProgressIndicator());
-                  } else if(snapshot.requireData.exists){
+                  }
+                  else if(snapshot.requireData.exists){
                     Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
                     return data['shopName'] != '' ?
                     Column(
@@ -181,7 +183,6 @@ class ProfileScreen extends StatelessWidget {
                             )
                           ],
                         ),
-
                         Padding(
                           padding: const EdgeInsets.only(left: 20.0,right: 20,bottom: 20),
                           child: Column(
@@ -400,10 +401,10 @@ class ProfileScreen extends StatelessWidget {
                         )
                       ],
                     );
-                  } else {
+                  }
+                  else {
                     return const Center(child: CircularProgressIndicator());
                   }
-
               }
             ),
           )

@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Form(
                 key: _formKey,
                 child: Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.only(top: 40.0,left: 20,right: 20),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: AppColor.greyColor,fontSize: 12
                         ),
                       ),
-                      const SizedBox(height: 70),
+                      const SizedBox(height: 50),
                       const Text('Email',style: TextStyle(color: AppColor.appColor)),
                       const SizedBox(height: 5),
                       TextFieldMixin().textFieldWidget(
@@ -129,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             alignment: Alignment.topRight,
                               padding: const EdgeInsets.all(10),
                               child:  const Text('Reset Password',style: TextStyle(fontSize: 12),))),
-                      const SizedBox(height: 40),
+                      const SizedBox(height: 30),
                       GestureDetector(
                           onTap: () async {
                             FocusScope.of(context).unfocus();
@@ -166,7 +166,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                       address: data.doc.get('address'), coverPageImage: data.doc.get('coverPageImage'),
                                       barberImage: data.doc.get('barberImage'), shopImage: data.doc.get('shopImage'),
                                       userType: data.doc.get('userType'), timestamp: data.doc.get('timeStamp'));
-                                  AppUtils.instance.showToast(toastMessage: "Update Profile");
                                 }
 
                                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const BottomNavBarScreen()));
@@ -175,43 +174,45 @@ class _LoginScreenState extends State<LoginScreen> {
                               Provider.of<LoadingProvider>(context,listen: false).stopLoading();
                             }
                           },
-                          child: ButtonMixin().appButton(text: 'Login'))
+                          child: ButtonMixin().appButton(text: 'Login')),
+
+                      SizedBox(height: 20,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.only(bottom: 10,top: 10),
+                            child: Text(
+                              'Need an account?  ',
+                              style: TextStyle(
+                                  decoration: TextDecoration.none,
+                                  color:AppColor.blackColor),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: (){
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const RegisterScreen()));
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.only(bottom: 10,top: 10),
+                              child: Text(
+                                'SIGN UP',
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    decoration: TextDecoration.underline,
+                                    decorationThickness: 1,
+                                    color:AppColor.appColor),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
               ),
             ),
           ),
-        bottomNavigationBar: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(bottom: 10,top: 10),
-              child: Text(
-                'Need an account?  ',
-                style: TextStyle(
-                    decoration: TextDecoration.none,
-                    color:AppColor.blackColor),
-              ),
-            ),
-            GestureDetector(
-              onTap: (){
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const RegisterScreen()));
-              },
-              child: const Padding(
-                padding: EdgeInsets.only(bottom: 10,top: 10),
-                child: Text(
-                  'SIGN UP',
-                  style: TextStyle(
-                      fontSize: 15,
-                      decoration: TextDecoration.underline,
-                      decorationThickness: 1,
-                      color:AppColor.appColor),
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

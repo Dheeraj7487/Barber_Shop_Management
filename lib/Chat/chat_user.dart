@@ -24,9 +24,7 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
         isEqualTo: FirebaseAuth.instance.currentUser?.email).get();
 
     for(var snapShot in shopQuerySnapshot.docChanges){
-      setState(() {
         userName = snapShot.doc.get('userName');
-      });
     }
   }
 
@@ -34,7 +32,7 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print(DateTime.now().subtract(Duration(days:1)));
+    debugPrint('${DateTime.now().subtract(const Duration(days:1))}');
     shopDetailsCheck();
   }
 
@@ -42,7 +40,7 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('chatrooms').
+          stream: FirebaseCollection().chatRoomCollection.
           where('participants.${FirebaseAuth.instance.currentUser?.uid}',isEqualTo: true).
           //orderBy('lastMessageTime').
           snapshots(),
@@ -70,7 +68,7 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
                               debugPrint('For Loop 1  => ${snapshotData.doc.get('userEmail')}');
                               debugPrint('For Loop 1  => ${snapshotData.doc.get('uid')}');
 
-                              QuerySnapshot snapshot1 = await FirebaseFirestore.instance.collection("chatrooms").
+                              QuerySnapshot snapshot1 = await FirebaseCollection().chatRoomCollection.
                               where("participants.${FirebaseAuth.instance.currentUser?.uid}", isEqualTo: true).
                               where("participants.${snapshotData.doc.get('uid')}", isEqualTo: true).get();
 
@@ -95,7 +93,7 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
                                   },
                                 );
 
-                                await FirebaseFirestore.instance.collection("chatrooms").doc(newChatroom.chatroomid).set(newChatroom.toMap());
+                                await FirebaseCollection().chatRoomCollection.doc(newChatroom.chatroomid).set(newChatroom.toMap());
                                 chatRoom = newChatroom;
                                 debugPrint("New Chatroom Created");
                               }
@@ -116,7 +114,7 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
                             {
                             debugPrint('For Loop 1  => ${snapshotData.doc.get('userEmail')}');
 
-                            QuerySnapshot snapshot1 = await FirebaseFirestore.instance.collection("chatrooms").
+                            QuerySnapshot snapshot1 = await FirebaseCollection().chatRoomCollection.
                             where("participants.${FirebaseAuth.instance.currentUser?.uid}", isEqualTo: true).
                             where("participants.${snapshotData.doc.get('uid')}", isEqualTo: true).get();
 
@@ -141,7 +139,7 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
                                 },
                               );
 
-                              await FirebaseFirestore.instance.collection("chatrooms").doc(newChatroom.chatroomid).set(newChatroom.toMap());
+                              await FirebaseCollection().chatRoomCollection.doc(newChatroom.chatroomid).set(newChatroom.toMap());
                               chatRoom = newChatroom;
                               debugPrint("New Chatroom Created");
                             }
@@ -150,8 +148,7 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
                           return chatRoom;
                         }
 
-                        ChatRoomModel? chatroomModel =
-                        FirebaseAuth.instance.currentUser?.email != snapshot.data?.docs[index]['chatUser1'] ?
+                        ChatRoomModel? chatroomModel = FirebaseAuth.instance.currentUser?.email != snapshot.data?.docs[index]['chatUser1'] ?
                         await getChatroomModel() : await getChatroomModel1();
                         if(chatroomModel != null) {
                           Navigator.push(context, MaterialPageRoute(
@@ -180,14 +177,8 @@ class _ChatUserScreenState extends State<ChatUserScreen> {
                     '${snapshot.data?.docs[index]['userName1'].substring(1).toLowerCase()}',
                     style: const TextStyle(fontSize: 12)
                     ),
-                        subtitle: Text(snapshot.data?.docs[index]['lastmessage'],
-                            style: const TextStyle(fontSize: 10),maxLines: 1,overflow: TextOverflow.ellipsis,),
-                        leading:
-                        //snapshot.data?.docs[index]['userImage'] != '' ?
-                        // ClipOval(
-                        //     child: Image.network(snapshot.data?.docs[index]['userImage'],
-                        //         height: 50,width: 50,fit: BoxFit.fill)) :
-                        ClipOval(
+                        subtitle: Text(snapshot.data?.docs[index]['lastmessage'], style: const TextStyle(fontSize: 10),maxLines: 1,overflow: TextOverflow.ellipsis,),
+                        leading: ClipOval(
                           child: Container(
                             color: AppColor.appColor,
                             height: 40,width: 40,child: Center(

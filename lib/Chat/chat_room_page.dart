@@ -4,19 +4,15 @@ import 'package:barber_booking_management/Firebase/firebase_collection.dart';
 import 'package:barber_booking_management/utils/app_color.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import '../main.dart';
-import 'firebase/chat_notification.dart';
 import 'model/chatroom_model.dart';
 import 'model/message_model.dart';
 
 
 class ChatRoomPage extends StatefulWidget {
   final  snapshotUserName,getOpenentUserEmail;
-  //myUserName;
   final ChatRoomModel chatroom;
   const ChatRoomPage({Key? key, required this.snapshotUserName, required this.chatroom, required this.getOpenentUserEmail}) : super(key: key);
   @override
@@ -29,7 +25,6 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
 
   void sendMessage() async {
     String msg = messageController.text.trim();
-    messageController.clear();
     if(msg != "") {
       // Send Message
       MessageModel newMessage = MessageModel(
@@ -39,25 +34,40 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
           text: msg,
           seen: false
       );
-      FirebaseFirestore.instance.collection("chatrooms").doc(widget.chatroom.chatroomid).
+      FirebaseCollection().chatRoomCollection.doc(widget.chatroom.chatroomid).
       collection("messages").doc(newMessage.messageid).set(newMessage.toMap());
       widget.chatroom.lastMessage = msg;
       widget.chatroom.lastMessageTime = DateTime.now().toString();
-      FirebaseFirestore.instance.collection("chatrooms").
+      FirebaseCollection().chatRoomCollection.
       doc(widget.chatroom.chatroomid).set(widget.chatroom.toMap());
       log('Chat Room Id ${widget.chatroom.chatroomid}');
       log('New Message Id ${newMessage.messageid}');
       log("Message Sent!");
+
+      var fetchTokenSnapshot = await FirebaseCollection().userCollection.get();
+
+      for(var snapShot in fetchTokenSnapshot.docChanges){
+        if(snapShot.doc.get('userEmail') == widget.getOpenentUserEmail){
+
+          var shopQuerySnapshot = await FirebaseCollection().userCollection.where('userEmail',
+              isEqualTo: FirebaseAuth.instance.currentUser?.email).get();
+
+          for(var userMsgSnapShot in shopQuerySnapshot.docChanges){
+            PushNotification().chatMessageNotification(
+                snapShot.doc.get('fcmToken'),
+                userMsgSnapShot.doc.get('userName'),
+                snapShot.doc.get('userName'),
+                messageController.text.toString(),
+                widget.getOpenentUserEmail,
+                FirebaseAuth.instance.currentUser?.email,
+            );
+          }
+          break;
+        }
+      }
+      messageController.clear();
     }
   }
-
-  // @override
-  // void initState() {
-  //   // TODO: implement initState
-  //   super.initState();
-  //   //Get FCM Token
-  //   FirebaseMessaging.instance.getToken().then((value) => debugPrint('Token: $value'));
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +82,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: StreamBuilder(
-                  stream: FirebaseFirestore.instance.collection("chatrooms").
+                  stream: FirebaseCollection().chatRoomCollection.
                   doc(widget.chatroom.chatroomid).collection("messages").
                   orderBy("timeStamp", descending: true).
                   snapshots(),
@@ -99,7 +109,7 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                                   child: const Text("Delete",style: TextStyle(color: AppColor.appColor,fontSize: 12),),
                                   onPressed:  () async {
                                     Navigator.pop(context);
-                                    FirebaseFirestore.instance.collection("chatrooms").
+                                    FirebaseCollection().chatRoomCollection.
                                     doc(widget.chatroom.chatroomid).
                                     collection("messages").doc(currentMessage.messageid).delete();
                                    // FirebaseCollection().userRatingCollection.doc('${ratingSnapshot.doc.get("currentUser")} ${widget.snapshotData['shopName']}').delete();
@@ -211,28 +221,8 @@ class _ChatRoomPageState extends State<ChatRoomPage> {
                     ),
                   ),
                   IconButton(
-                    onPressed: () async{
-
-                      var fetchTokenSnapshot = await FirebaseCollection().userCollection.get();
-
-                      for(var snapShot in fetchTokenSnapshot.docChanges){
-
-                        if(snapShot.doc.get('userEmail') == widget.getOpenentUserEmail){
-                          print('dfsdfs => ${snapShot.doc.get('userEmail')}');
-                          print('Current User => ${FirebaseAuth.instance.currentUser?.email}');
-                          print('dfsdfs => ${widget.getOpenentUserEmail}');
-                          print('fcmToken => ${snapShot.doc.get('fcmToken')}');
-                          PushNotification().chatMessageNotification(
-                              snapShot.doc.get('fcmToken'),
-                          widget.snapshotUserName, messageController.text.toString(),
-                          widget.getOpenentUserEmail
-                          );
-                          break;
-                        }
-                      }
-
+                    onPressed: () {
                       sendMessage();
-
                     },
                     icon: Icon(Icons.send, color: Theme.of(context).colorScheme.secondary,),
                   ),

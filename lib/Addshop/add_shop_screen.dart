@@ -234,6 +234,7 @@ class _AddShopScreenState extends State<AddShopScreen> {
   void initState() {
     // TODO: implement initState
     Provider.of<AddShopProvider>(context,listen: false).selectHairStyle = null;
+    Provider.of<AddShopProvider>(context,listen: false).selectGender = null;
     super.initState();
   }
 
@@ -422,7 +423,6 @@ class _AddShopScreenState extends State<AddShopScreen> {
                         }).toList(),
                       ),
                     ),
-
                     const SizedBox(height: 10),
                     Container(
                       padding: const EdgeInsets.only(left: 20,top: 5,bottom: 5,right: 20),
@@ -463,9 +463,7 @@ class _AddShopScreenState extends State<AddShopScreen> {
                         }).toList(),
                       ),
                     ),
-
                     const SizedBox(height: 10),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -501,7 +499,6 @@ class _AddShopScreenState extends State<AddShopScreen> {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -568,7 +565,6 @@ class _AddShopScreenState extends State<AddShopScreen> {
                                 fit: BoxFit.fill,)
                           ),
                         ),
-
                       ],
                     ),
 
@@ -579,59 +575,69 @@ class _AddShopScreenState extends State<AddShopScreen> {
                         builder: (context, locationSnapshot) {
                           if(!locationSnapshot.hasData){
                             return const Center(child: CircularProgressIndicator());
-                          }else {
-                            markers.add(Marker(
-                              markerId: const MarkerId("1"),
-                              onTap: (){},
-                              infoWindow: const InfoWindow(title: "You are here"),
-                              position: LatLng(locationSnapshot.data!.latitude!,locationSnapshot.data!.longitude!),
-                              icon: BitmapDescriptor.defaultMarkerWithHue(
-                                BitmapDescriptor.hueRed,
-                              ),
-                            ));
-                            return Stack(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(20)),
-                                  height: 150,width: double.infinity,
-                                  child: GoogleMap(
-                                    zoomControlsEnabled: false,
-                                    onMapCreated: _onMapCreated,
-                                    initialCameraPosition: CameraPosition(
-                                      target: LatLng(locationSnapshot.data!.latitude!,locationSnapshot.data!.longitude!),
-                                      zoom: 11.0,
-                                    ),
-                                    markers: markers,
-                                  ),
+                          }
+                          else if(locationSnapshot.connectionState == ConnectionState.done){
+                            if(locationSnapshot.hasData){
+                              markers.add(Marker(
+                                markerId: const MarkerId("1"),
+                                onTap: (){},
+                                infoWindow: const InfoWindow(title: "Current Location"),
+                                position: LatLng(locationSnapshot.data!.latitude!,locationSnapshot.data!.longitude!),
+                                icon: BitmapDescriptor.defaultMarkerWithHue(
+                                  BitmapDescriptor.hueRed,
                                 ),
+                              ));
+                              return Stack(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(20)
+                                    ),
+                                    height: 150,width: double.infinity,
+                                    child: GoogleMap(
+                                      zoomControlsEnabled: false,
+                                      onMapCreated: _onMapCreated,
+                                      initialCameraPosition: CameraPosition(
+                                        target: LatLng(locationSnapshot.data!.latitude!,locationSnapshot.data!.longitude!),
+                                        zoom: 11.0,
+                                      ),
+                                      markers: markers,
+                                    ),
+                                  ),
 
-                                Positioned(
-                                  bottom: 10,left: 10,
-                                  child: InkWell(
-                                      child: Container(
-                                          padding: const EdgeInsets.all(10),
-                                          decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(20),
-                                              color: Colors.white),
-                                          height: 40,
-                                          child: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: const [
-                                              Icon(Icons.add_location_alt_outlined,color: AppColor.appColor,),
-                                              SizedBox(width: 5),
-                                              Text("Edit From Here"),
-                                            ],
-                                          )),
-                                      onTap: ()=>
-                                          Navigator.push(context, MaterialPageRoute(builder: (context)=>
-                                          const AddLocationToMapScreen())).then((value) {
+                                  Positioned(
+                                    bottom: 10,left: 10,
+                                    child: InkWell(
+                                        child: Container(
+                                            padding: const EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(10),
+                                                color: Colors.white),
+                                            height: 40,
+                                            child: Row(
+                                              crossAxisAlignment: CrossAxisAlignment.center,
+                                              children: const [
+                                                Icon(Icons.add_location_alt_outlined,color: AppColor.appColor,size: 18,),
+                                                SizedBox(width: 5),
+                                                Text("Edit From Here",style: TextStyle(fontSize: 12)),
+                                              ],
+                                            )),
+                                        onTap: ()=>
+                                            Navigator.push(context, MaterialPageRoute(builder: (context)=>
+                                            const AddLocationToMapScreen())).then((value) {
                                               snapshot.latitude=value.latitude.toString();
                                               snapshot.longitude=value.longitude.toString();
-                                          })
+                                            })
+                                    ),
                                   ),
-                                ),
-                              ],
-                            );
+                                ],
+                              );
+                            } else {
+                              return const Center(child: CircularProgressIndicator());
+                            }
+                          }
+                          else {
+                            return const Center(child: CircularProgressIndicator());
                           }
                         }
                     ),
@@ -640,7 +646,9 @@ class _AddShopScreenState extends State<AddShopScreen> {
                         onTap: () {
                           if(_formKey.currentState!.validate())
                           {
-                            if(snapshot.barberFile != null && snapshot.shopImage != null && snapshot.coverShopImage != null){
+                            if(snapshot.barberFile != null && snapshot.shopImage != null && snapshot.coverShopImage != null
+                                && Provider.of<AddShopProvider>(context,listen: false).longitude != '' &&
+                                Provider.of<AddShopProvider>(context,listen: false).latitude != ''){
                               uploadFile(context);
                             } else {
                               AppUtils.instance.showToast(toastMessage: 'All field is required');

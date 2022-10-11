@@ -1,17 +1,22 @@
 import 'dart:async';
+import 'package:barber_booking_management/Chat/notification/push_notification.dart';
 import 'package:barber_booking_management/Home/widget/best_salon_service_widget.dart';
 import 'package:barber_booking_management/Home/widget/choose_barber_widget.dart';
 import 'package:barber_booking_management/Home/widget/popular_category_widget.dart';
 import 'package:barber_booking_management/Profile/screen/edit_profile_screen.dart';
 import 'package:barber_booking_management/utils/app_color.dart';
-import 'package:barber_booking_management/utils/app_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../Addshop/add_shop_screen.dart';
 import '../Firebase/firebase_collection.dart';
-import '../mixin/button_mixin.dart';
-import '../utils/app_image.dart';
-import '../utils/app_prefrence_key.dart';
+import '../Profile/profile_screen.dart';
+import '../main.dart';
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print("onBackgroundMessage: $message");
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -40,7 +45,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     shopDetailsCheck();
   }

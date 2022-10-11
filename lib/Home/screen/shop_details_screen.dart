@@ -157,7 +157,7 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> with SingleTicker
                                        Future<ChatRoomModel?> getChatroomModel() async {
                                          ChatRoomModel? chatRoom;
 
-                                         QuerySnapshot snapshot1 = await FirebaseFirestore.instance.collection("chatrooms").
+                                         QuerySnapshot snapshot1 = await FirebaseCollection().chatRoomCollection.
                                          where("participants.${FirebaseAuth.instance.currentUser?.uid}", isEqualTo: true).
                                          where("participants.${widget.snapshotData['uid']}", isEqualTo: true).get();
 
@@ -181,7 +181,7 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> with SingleTicker
                                              },
                                            );
 
-                                           await FirebaseFirestore.instance.collection("chatrooms").doc(newChatroom.chatroomid).set(newChatroom.toMap());
+                                           await FirebaseCollection().chatRoomCollection.doc(newChatroom.chatroomid).set(newChatroom.toMap());
 
                                            chatRoom = newChatroom;
                                            debugPrint("New Chatroom Created");
@@ -196,20 +196,23 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> with SingleTicker
                                                return ChatRoomPage(
                                                  snapshotUserName: widget.snapshotData['userName'],
                                                  chatroom: chatroomModel,
-                                                getOpenentUserEmail: widget.snapshotData['currentUser'],
-                                                // myUserName: userName,
+                                                 getOpenentUserEmail: widget.snapshotData['currentUser'],
+                                                 // myUserName: userName,
                                                );
                                              }
                                          ));
                                        }
 
                                      },
-                                     child: Column(
-                                       children: [
-                                         Image.asset(AppImage.chatNow,height: 30,width: 30),
-                                         const SizedBox(height: 5),
-                                         const Text('Chat Now')
-                                       ],
+                                     child: Padding(
+                                       padding: const EdgeInsets.all(8.0),
+                                       child: Column(
+                                         children: [
+                                           Image.asset(AppImage.chatNow,height: 30,width: 30),
+                                           const SizedBox(height: 5),
+                                           const Text('Chat Now')
+                                         ],
+                                       ),
                                      ),
                                    ),
                                  },
@@ -222,12 +225,15 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> with SingleTicker
                                     await launchUrl(launchUri);
                                     //await launch('tel:${widget.snapshotData['contactNumber']}');
                                   },
-                                  child: Column(
-                                    children:  [
-                                      Image.asset(AppImage.call,height: 30,width: 30),
-                                      const SizedBox(height: 5),
-                                      const Text('Call Now')
-                                    ],
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children:  [
+                                        Image.asset(AppImage.call,height: 30,width: 30),
+                                        const SizedBox(height: 5),
+                                        const Text('Call Now')
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 GestureDetector(
@@ -259,24 +265,30 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> with SingleTicker
                                     //       shopAddress: widget.snapshotData['address'],
                                     //     )));
                                   },
-                                  child: Column(
-                                    children:  [
-                                      Image.asset(AppImage.map,height: 30,width: 30),
-                                      const SizedBox(height: 5),
-                                      const Text('Direction')
-                                    ],
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children:  [
+                                        Image.asset(AppImage.map,height: 30,width: 30),
+                                        const SizedBox(height: 5),
+                                        const Text('Direction')
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 GestureDetector(
                                   onTap: (){
                                     Navigator.push(context, MaterialPageRoute(builder: (context)=> AppointmentBookScreen(snapshotData: widget.snapshotData,)));
                                   },
-                                  child: Column(
-                                    children:  [
-                                      Image.asset(AppImage.bookNow,height: 30,width: 30),
-                                      const SizedBox(height: 5),
-                                      const Text('Book Now')
-                                    ],
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      children:  [
+                                        Image.asset(AppImage.bookNow,height: 30,width: 30),
+                                        const SizedBox(height: 5),
+                                        const Text('Book Now')
+                                      ],
+                                    ),
                                   ),
                                 )
                               ],
@@ -293,7 +305,6 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> with SingleTicker
                           indicatorSize: TabBarIndicatorSize.tab,
                           labelColor: AppColor.blackColor,
                           indicatorColor: AppColor.appColor,
-
                           labelStyle: const TextStyle(overflow: TextOverflow.ellipsis),
                           indicator: const UnderlineTabIndicator(
                               borderSide: BorderSide(width: 2,color: AppColor.appColor)

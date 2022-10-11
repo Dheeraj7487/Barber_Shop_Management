@@ -62,7 +62,7 @@
 //                       Future<ChatRoomModel?> getChatroomModel() async {
 //                         ChatRoomModel? chatRoom;
 //
-//                         QuerySnapshot snapshot1 = await FirebaseFirestore.instance.collection("chatrooms").
+//                         QuerySnapshot snapshot1 = await FirebaseCollection().chatRoomCollection.
 //                         where("participants.${FirebaseAuth.instance.currentUser?.uid}", isEqualTo: true).
 //                         where("participants.${snapshot.data?.docs[index]['uid']}", isEqualTo: true).get();
 //
@@ -86,7 +86,7 @@
 //                             },
 //                           );
 //
-//                           await FirebaseFirestore.instance.collection("chatrooms").doc(newChatroom.chatroomid).set(newChatroom.toMap());
+//                           await FirebaseCollection().chatRoomCollection.doc(newChatroom.chatroomid).set(newChatroom.toMap());
 //
 //                           chatRoom = newChatroom;
 //                           debugPrint("New Chatroom Created");

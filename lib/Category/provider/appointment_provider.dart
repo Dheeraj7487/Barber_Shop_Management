@@ -4,18 +4,10 @@ class AppointmentProvider extends ChangeNotifier{
 
   DateTime bookDate = DateTime.now();
   String timeSetAdd = "";
-  bool twoPmTime = false;
-  bool threePmTime = false;
-  bool fourPmTime = false;
-  bool fivePmTime = false;
-  bool sixPmTime = false;
-  bool sevenPMTime = false;
-  bool eightAmTime = false;
-  bool eightPmTime = false;
-  bool nineAmTime = false;
-  bool tenAmTime = false;
-  bool elevenAmTime = false;
-  bool twelvePmTime = false;
+  bool twoPmTime = false,threePmTime = false,fourPmTime = false;
+  bool fivePmTime = false,sixPmTime = false,sevenPMTime = false;
+  bool eightAmTime = false,eightPmTime = false,nineAmTime = false;
+  bool tenAmTime = false,elevenAmTime = false,twelvePmTime = false;
 
   getDate() {
     notifyListeners();

@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:provider/provider.dart';
 
-import '../../Addshop/provider/add_shop_provider.dart';
 import '../../Firebase/firebase_collection.dart';
 import '../../Login/provider/loading_provider.dart';
 import '../../mixin/button_mixin.dart';
@@ -25,7 +24,7 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
 
-  TextEditingController emailController = TextEditingController();
+  //TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController mobileController = TextEditingController();
 
@@ -37,10 +36,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     final formKey = GlobalKey<FormState>();
 
-    Future<File> imageSizeCompress(
-        {required File image,
-          quality = 100,
-          percentage = 10}) async {
+    Future<File> imageSizeCompress({required File image, quality = 100, percentage = 10}) async {
       var path = await FlutterNativeImage.compressImage(image.absolute.path,quality: 100,percentage: 60);
       return path;
     }
@@ -77,7 +73,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         for(var data in snapshotData.docChanges){
           debugPrint('User Name ${data.doc.get('userEmail')}');
           LoginProvider().addUserDetail(
-              userName: nameController.text, userEmail: emailController.text,
+              userName: nameController.text, userEmail: data.doc.get('userEmail'),
               userMobile: mobileController.text, userImage: imageUrl,
               uId: data.doc.get("uid"),
               fcmToken: data.doc.get("fcmToken"),
@@ -116,12 +112,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             stream: FirebaseCollection().userCollection.doc(FirebaseAuth.instance.currentUser?.email).snapshots(),
             builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot<Object?>> snapshot) {
               if (snapshot.hasError) {
-                print('Something went wrong');
-                return const Text("Something went wrong");
+                return const Center(child: Text("Something went wrong"));
               } else if (!snapshot.hasData || !snapshot.data!.exists) {
                 print('Document does not exist');
                 return const Center(child: CircularProgressIndicator());
-              } else if(snapshot.requireData.exists){
+              }
+              else if(snapshot.requireData.exists){
                 Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -183,25 +179,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               return null;
                             },
                           ),
-                          const SizedBox(height: 10,),
-                          TextFieldMixin().textFieldWidget(
-                            controller: emailController..text = data['userEmail'],
-                            readOnly: true,
-                            textInputAction: TextInputAction.next,
-                            keyboardType: TextInputType.emailAddress,
-                            hintText: "Enter email",
-                            prefixIcon: const Icon(Icons.email_outlined,color: AppColor.appColor),
-                            validator: (value) {
-                              if (value!.isEmpty ||
-                                  value.trim().isEmpty ||
-                                  !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@"
-                                  r"[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                      .hasMatch(value)) {
-                                return 'Enter a valid email';
-                              }
-                              return null;
-                            },
-                          ),
+                          // const SizedBox(height: 10,),
+                          // TextFieldMixin().textFieldWidget(
+                          //   controller: emailController..text = data['userEmail'],
+                          //   readOnly: true,
+                          //   textInputAction: TextInputAction.next,
+                          //   keyboardType: TextInputType.emailAddress,
+                          //   hintText: "Enter email",
+                          //   prefixIcon: const Icon(Icons.email_outlined,color: AppColor.appColor),
+                          //   validator: (value) {
+                          //     if (value!.isEmpty ||
+                          //         value.trim().isEmpty ||
+                          //         !RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@"
+                          //         r"[a-zA-Z0-9]+\.[a-zA-Z]+")
+                          //             .hasMatch(value)) {
+                          //       return 'Enter a valid email';
+                          //     }
+                          //     return null;
+                          //   },
+                          // ),
                           const SizedBox(height: 10,),
                           TextFieldMixin().textFieldWidget(
                             controller: mobileController..text = data['userMobile'],
@@ -229,7 +225,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     uploadFile();
                                   } else{
                                     LoginProvider().addUserDetail(
-                                        userName: nameController.text, userEmail: emailController.text,
+                                        userName: nameController.text, userEmail: data['userEmail'],
                                         userMobile: mobileController.text, userImage: data['userImage'],
                                         uId: data['uid'],
                                         fcmToken: data['fcmToken'],
@@ -257,10 +253,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ],
                 );
-              } else if (snapshot.connectionState == ConnectionState.done) {
-                return const Center(child: CircularProgressIndicator(),);
+              }
+              else if (snapshot.connectionState == ConnectionState.done) {
+                return const Center(child: CircularProgressIndicator());
               } else{
-                return const Center(child: CircularProgressIndicator(),);
+                return const Center(child: CircularProgressIndicator());
               }
             },
           ),

@@ -113,9 +113,11 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
         actions: [
           const SizedBox(height: 10,),
           Center(child: Image.asset(AppImage.checked,height: 50,width: 50,)),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(30,10,30,20),
-            child: Text("Successfully your appointment book",textAlign: TextAlign.center,),
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(30,10,30,20),
+              child: Text("Successfully your appointment book",textAlign: TextAlign.center,),
+            ),
           ),
           GestureDetector(
               onTap: (){
@@ -335,8 +337,12 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
                               builder: (BuildContext context, appointmentSnapshot, Widget? child) {
                                 return ButtonMixin().timeButton(
                                   text: '08:00 AM',
-                                  bgColor: appointmentSnapshot.eightAmTime == false ? AppColor.appColor : AppColor.beachColor2,
-                                  onPress: (){
+                                  bgColor:
+                                  Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                      DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 8 ? AppColor.greyColor :
+                                  appointmentSnapshot.eightAmTime == false ? AppColor.appColor : AppColor.beachColor2,
+                                  onPress: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                      DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 8 ? null : (){
                                     appointmentSnapshot.getEightAmTime;
                                     appointmentSnapshot.timeSetAdd = '08:00 AM';
                                   }
@@ -373,8 +379,11 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
                               builder: (BuildContext context, appointmentSnapshot, Widget? child) {
                                 return ButtonMixin().timeButton(
                                     text: '09:00 AM',
-                                    bgColor: appointmentSnapshot.nineAmTime == false ? AppColor.appColor : AppColor.beachColor2,
-                                    onPress: (){
+                                    bgColor: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 9 ? AppColor.greyColor :
+                                    appointmentSnapshot.nineAmTime == false ? AppColor.appColor : AppColor.beachColor2,
+                                    onPress: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 9 ? null : (){
                                       appointmentSnapshot.getNineAmTime;
                                       appointmentSnapshot.timeSetAdd = '09:00 AM';
                                     }
@@ -408,8 +417,11 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
                               builder: (BuildContext context, appointmentSnapshot, Widget? child){
                                 return ButtonMixin().timeButton(
                                     text: '10:00 AM',
-                                    bgColor: appointmentSnapshot.tenAmTime == false ? AppColor.appColor : AppColor.beachColor2,
-                                    onPress: (){
+                                    bgColor: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 10 ? AppColor.greyColor :
+                                    appointmentSnapshot.tenAmTime == false ? AppColor.appColor : AppColor.beachColor2,
+                                    onPress: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 10 ? null : (){
                                      appointmentSnapshot.getTenAmTime;
                                      appointmentSnapshot.timeSetAdd = '10:00 AM';
                                     }
@@ -444,8 +456,11 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
                               builder: (BuildContext context, appointmentSnapshot, Widget? child) {
                                 return ButtonMixin().timeButton(
                                     text: '11:00 AM',
-                                    bgColor: appointmentSnapshot.elevenAmTime == false ? AppColor.appColor : AppColor.beachColor2,
-                                    onPress: (){
+                                    bgColor: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 11 ? AppColor.greyColor :
+                                    appointmentSnapshot.elevenAmTime == false ? AppColor.appColor : AppColor.beachColor2,
+                                    onPress: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 11 ? null : (){
                                        appointmentSnapshot.getElevenAmTime;
                                        appointmentSnapshot.timeSetAdd = '11:00 AM';
                                     }
@@ -488,8 +503,11 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
                               builder: (BuildContext context, appointmentSnapshot, Widget? child) {
                                 return ButtonMixin().timeButton(
                                     text: '12:00 PM',
-                                    bgColor: appointmentSnapshot.twelvePmTime == false ? AppColor.appColor : AppColor.beachColor2,
-                                    onPress: (){
+                                    bgColor: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 12 ? AppColor.greyColor :
+                                    appointmentSnapshot.twelvePmTime == false ? AppColor.appColor : AppColor.beachColor2,
+                                    onPress: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 12 ? null : (){
                                       appointmentSnapshot.getTwelvePmTime;
                                       appointmentSnapshot.timeSetAdd = '12:00 PM';
                                     }
@@ -526,8 +544,11 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
                               builder: (BuildContext context, appointmentSnapshot, Widget? child) {
                                 return ButtonMixin().timeButton(
                                     text: '02:00 PM',
-                                    bgColor: appointmentSnapshot.twoPmTime == false ? AppColor.appColor : AppColor.beachColor2,
-                                    onPress: (){
+                                    bgColor: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 14 ? AppColor.greyColor :
+                                    appointmentSnapshot.twoPmTime == false ? AppColor.appColor : AppColor.beachColor2,
+                                    onPress: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 14 ? null : (){
                                       appointmentSnapshot.getTwoPmTime;
                                       appointmentSnapshot.timeSetAdd = '02:00 PM';
                                     }
@@ -564,8 +585,11 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
                               builder: (BuildContext context, appointmentSnapshot, Widget? child) {
                                 return ButtonMixin().timeButton(
                                     text: '03:00 PM',
-                                    bgColor: appointmentSnapshot.threePmTime == false ? AppColor.appColor : AppColor.beachColor2,
-                                    onPress: (){
+                                    bgColor: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 15 ? AppColor.greyColor :
+                                    appointmentSnapshot.threePmTime == false ? AppColor.appColor : AppColor.beachColor2,
+                                    onPress: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 15 ? null : (){
                                       appointmentSnapshot.getThreePmTime;
                                       appointmentSnapshot.timeSetAdd = '03:00 PM';
                                     }
@@ -600,8 +624,11 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
                               builder: (BuildContext context, appointmentSnapshot, Widget? child) {
                                 return ButtonMixin().timeButton(
                                     text: '04:00 PM',
-                                    bgColor: appointmentSnapshot.fourPmTime == false ? AppColor.appColor : AppColor.beachColor2,
-                                    onPress: (){
+                                    bgColor: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 16 ? AppColor.greyColor :
+                                    appointmentSnapshot.fourPmTime == false ? AppColor.appColor : AppColor.beachColor2,
+                                    onPress: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 16 ? null : (){
                                       appointmentSnapshot.getFourPmTime;
                                       appointmentSnapshot.timeSetAdd = '04:00 PM';
                                     }
@@ -644,8 +671,11 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
                               builder: (BuildContext context, appointmentSnapshot, Widget? child) {
                                 return ButtonMixin().timeButton(
                                     text: '05:00 PM',
-                                    bgColor: appointmentSnapshot.fivePmTime == false ? AppColor.appColor : AppColor.beachColor2,
-                                    onPress: (){
+                                    bgColor: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 17 ? AppColor.greyColor :
+                                    appointmentSnapshot.fivePmTime == false ? AppColor.appColor : AppColor.beachColor2,
+                                    onPress: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 17 ? null : (){
                                       appointmentSnapshot.getFivePmTime;
                                       appointmentSnapshot.timeSetAdd = '05:00 PM';
                                     }
@@ -682,8 +712,11 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
                               builder: (BuildContext context, appointmentSnapshot, Widget? child) {
                                 return ButtonMixin().timeButton(
                                     text: '06:00 PM',
-                                    bgColor: appointmentSnapshot.sixPmTime == false ? AppColor.appColor : AppColor.beachColor2,
-                                    onPress: (){
+                                    bgColor: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 18 ? AppColor.greyColor :
+                                    appointmentSnapshot.sixPmTime == false ? AppColor.appColor : AppColor.beachColor2,
+                                    onPress: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 18 ? null : (){
                                       appointmentSnapshot.getSixPmTime;
                                       appointmentSnapshot.timeSetAdd = '06:00 PM';
                                     }
@@ -720,8 +753,11 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
                               builder: (BuildContext context, appointmentSnapshot, Widget? child) {
                                 return ButtonMixin().timeButton(
                                     text: '07:00 PM',
-                                    bgColor: appointmentSnapshot.sevenPMTime == false ? AppColor.appColor : AppColor.beachColor2,
-                                    onPress: (){
+                                    bgColor: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 19 ? AppColor.greyColor :
+                                    appointmentSnapshot.sevenPMTime == false ? AppColor.appColor : AppColor.beachColor2,
+                                    onPress: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 19 ? null : (){
                                       appointmentSnapshot.getSevenPmTime;
                                       appointmentSnapshot.timeSetAdd = '07:00 PM';
                                     }
@@ -756,8 +792,11 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
                               builder: (BuildContext context, appointmentSnapshot, Widget? child) {
                                 return ButtonMixin().timeButton(
                                     text: '08:00 PM',
-                                    bgColor: appointmentSnapshot.eightPmTime == false ? AppColor.appColor : AppColor.beachColor2,
-                                    onPress: (){
+                                    bgColor: Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 20 ? AppColor.greyColor :
+                                    appointmentSnapshot.eightPmTime == false ? AppColor.appColor : AppColor.beachColor2,
+                                    onPress:  Provider.of<AppointmentProvider>(context,listen: false).bookDate.toString().substring(0,10) ==
+                                        DateTime.now().toString().substring(0,10) && DateTime.now().hour >= 20 ? null : (){
                                       appointmentSnapshot.getEightPmTime;
                                       appointmentSnapshot.timeSetAdd = '08:00 PM';
                                     }
@@ -830,7 +869,23 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
                              // showAlertDialog(context);
 
                           } : null,
-                          child: ButtonMixin().appButton(text: 'Book Now')
+                          child: ButtonMixin().appButton(text: 'Book Now',
+                          //     bgColor:
+                          // appointmentSnapshot.eightAmTime != false ||
+                          //     appointmentSnapshot.nineAmTime  != false ||
+                          //     appointmentSnapshot.tenAmTime != false ||
+                          //     appointmentSnapshot.elevenAmTime != false ||
+                          //     appointmentSnapshot.twelvePmTime != false ||
+                          //     appointmentSnapshot.twoPmTime  != false ||
+                          //     appointmentSnapshot.threePmTime  != false ||
+                          //     appointmentSnapshot.fourPmTime != false||
+                          //     appointmentSnapshot.fivePmTime  != false ||
+                          //     appointmentSnapshot.sixPmTime != false ||
+                          //     appointmentSnapshot.sevenPMTime != false ||
+                          //     appointmentSnapshot.eightPmTime != false ?
+                          // AppColor.appColor :
+                          // AppColor.greyColor
+                          )
                   );
                 }
               ),

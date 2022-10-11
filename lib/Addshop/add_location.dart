@@ -37,46 +37,35 @@ class _AddLocationToMapScreenState extends State<AddLocationToMapScreen> {
               markers.add(Marker(
                 markerId: const MarkerId("1"),
                 onTap: (){},
-                infoWindow: const InfoWindow(title: "You are here"),
+                infoWindow: const InfoWindow(title: "My Location"),
                 position: LatLng(snapshot.data!.latitude!,snapshot.data!.longitude!),
                 icon: BitmapDescriptor.defaultMarkerWithHue(
                   BitmapDescriptor.hueRed,
                 ),
               ));
-              return Stack(
-                children: [
-                  GoogleMap(
-                    onMapCreated: _onMapCreated,
-                    initialCameraPosition: CameraPosition(
-                      target: LatLng(snapshot.data!.latitude!,snapshot.data!.longitude!),
-                      zoom: 11.0,
-                    ),
-                    // onTap: (e){
-                    //   Clipboard.setData(ClipboardData(text: "your text"));
-                    // },
-                    markers: markers,
-                    onTap: (latLng){
-                      _handleTap(LatLng(latLng.latitude, latLng.longitude)).then((value) {
-                        debugPrint(value);
-                        //    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(latLng.latitude.toString())));
-                        // const SnackBar(content: Text("hello",style: TextStyle(color: Colors.white))
-                        //     ,backgroundColor: Colors.red);
-                        Future.delayed(const Duration(milliseconds: 2000), () {
-                          setState(() {
-                            Navigator.pop(context,latLng);
-                          });
-
-                        });
-                      });
-                      //   users.doc().set({
-                      //   "latitude":latLng.latitude.toString(),
-                      //     "longitude":latLng.longitude.toString(),
-                      //     "location":markerController.text,
-                      //   "timeStamp":DateTime.now()
-                      // }).then((value) => _handleTap(LatLng(latLng.latitude, latLng.longitude)));
-                    },
-                  ),
-                ],
+              return GoogleMap(
+                zoomGesturesEnabled: true,
+                myLocationEnabled : true,
+                compassEnabled: true,
+                mapToolbarEnabled: true,
+                tiltGesturesEnabled: true,
+                myLocationButtonEnabled: true,
+                indoorViewEnabled: true,
+                trafficEnabled: true,
+                onMapCreated: _onMapCreated,
+                initialCameraPosition: CameraPosition(
+                  target: LatLng(snapshot.data!.latitude!,snapshot.data!.longitude!),
+                  zoom: 6
+                ),
+                markers: markers,
+                onTap: (latLng){
+                  _handleTap(LatLng(latLng.latitude, latLng.longitude)).then((value) {
+                    debugPrint(value);
+                    Future.delayed(const Duration(milliseconds: 2000), () {
+                        Navigator.pop(context,latLng);
+                    });
+                  });
+                },
               );
             }
           }

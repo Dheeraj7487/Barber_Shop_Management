@@ -18,65 +18,65 @@ class AddShopProvider extends ChangeNotifier{
 
   List<String> selectHairStyleList = ['Pixie Cut','Medium Length',
     'Crew Cut','Bun Cut','French Crop','Faux Hawk','Fringe','Buzz Cut','Man Bread'];
-
-  List stateList = [
-    {
-      "Andhra Pradesh" :[
-        {
-          'District' : [
-            "Anantapur", "Chittoor", "East Godavari", "Guntur", "Kadapa", "Krishna",
-            "Kurnool", "Nellore", "Prakasam", "Srikakulam", "Visakhapatnam", "West Godavari"
-          ]
-        }
-      ]
-    },
-    {
-      'Hyderabad' :[
-        {
-          'District' : [
-          "Musheerabad", "Malakpet", "Amberpet", "Khairatabad", "Jubilee Hills",
-            "Sanathnagar", "Karwan", "Nampally", "Goshamahal", "Charminar", "Chandrayangutta",
-            "Yakutpura", "Bahadurpura", "Secunderabad", "Secunderabad Cantt"
-          ]
-        }
-      ],
-    },
-    {
-      "Arunachal Pradesh" :[
-        {
-          'District' : [
-
-          ]
-        }
-      ],
-    },
-    "Assam",
-    "Bihar",
-    "Chhattisgarh",
-    "Goa",
-    "Gujarat",
-    "Haryana",
-    "Himachal Pradesh",
-    "Jharkhand",
-    "Karnataka",
-    "Kerala",
-    "Madhya Pradesh",
-    "Maharashtra",
-    "Manipur",
-    "Meghalaya",
-    "Mizoram",
-    "Nagaland",
-    "Odisha",
-    "Punjab",
-    "Rajasthan",
-    "Sikkim",
-    "Tamil Nadu",
-    "Telangana",
-    "Tripura",
-    "Uttar Pradesh",
-    "Uttarakhand",
-    'West Bengal'
-  ];
+  //
+  // List stateList = [
+  //   {
+  //     "Andhra Pradesh" :[
+  //       {
+  //         'District' : [
+  //           "Anantapur", "Chittoor", "East Godavari", "Guntur", "Kadapa", "Krishna",
+  //           "Kurnool", "Nellore", "Prakasam", "Srikakulam", "Visakhapatnam", "West Godavari"
+  //         ]
+  //       }
+  //     ]
+  //   },
+  //   {
+  //     'Hyderabad' :[
+  //       {
+  //         'District' : [
+  //         "Musheerabad", "Malakpet", "Amberpet", "Khairatabad", "Jubilee Hills",
+  //           "Sanathnagar", "Karwan", "Nampally", "Goshamahal", "Charminar", "Chandrayangutta",
+  //           "Yakutpura", "Bahadurpura", "Secunderabad", "Secunderabad Cantt"
+  //         ]
+  //       }
+  //     ],
+  //   },
+  //   {
+  //     "Arunachal Pradesh" :[
+  //       {
+  //         'District' : [
+  //
+  //         ]
+  //       }
+  //     ],
+  //   },
+  //   "Assam",
+  //   "Bihar",
+  //   "Chhattisgarh",
+  //   "Goa",
+  //   "Gujarat",
+  //   "Haryana",
+  //   "Himachal Pradesh",
+  //   "Jharkhand",
+  //   "Karnataka",
+  //   "Kerala",
+  //   "Madhya Pradesh",
+  //   "Maharashtra",
+  //   "Manipur",
+  //   "Meghalaya",
+  //   "Mizoram",
+  //   "Nagaland",
+  //   "Odisha",
+  //   "Punjab",
+  //   "Rajasthan",
+  //   "Sikkim",
+  //   "Tamil Nadu",
+  //   "Telangana",
+  //   "Tripura",
+  //   "Uttar Pradesh",
+  //   "Uttarakhand",
+  //   'West Bengal'
+  // ];
 
   get getHairCategory {
     notifyListeners();

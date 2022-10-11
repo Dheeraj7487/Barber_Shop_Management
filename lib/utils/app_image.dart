@@ -17,6 +17,26 @@ class AppImage{
   static const myShop="assets/images/my_shop.png";
   static const chat="assets/images/chat.png";
   static const chatNow="assets/images/chat_now.png";
-  
-  static const butCut="assets/images/hair/bunCut.png";
+  static const checkBgRemove="assets/images/flag.jpeg";
+
+  static const bunCut="assets/images/maleHair/bunCut.png";
+  static const buzzCut="assets/images/maleHair/buzzCut.png";
+  static const crewCut="assets/images/maleHair/crewCut.png";
+  static const fauxHawk="assets/images/maleHair/fauxHawk.png";
+  static const frenchCrop="assets/images/maleHair/frenchCrop.png";
+  static const fringe="assets/images/maleHair/Fringe.png";
+  static const manBread="assets/images/maleHair/manBread.png";
+  static const mediumLength="assets/images/maleHair/mediumLength.png";
+  static const pixieCut="assets/images/maleHair/pixieCut.png";
+
+
+  static const femaleBunCut="assets/images/femaleHair/femaleBunCut.png";
+  static const femaleBuzzCut="assets/images/femaleHair/femaleBuzzCut.png";
+  static const femaleCrewCut="assets/images/femaleHair/femaleCrewCut.png";
+  static const femaleFauxHawk="assets/images/femaleHair/femaleFauxHawk.png";
+  static const femaleFrenchCrop="assets/images/femaleHair/femaleFrenchCrop.png";
+  static const femaleFringe="assets/images/femaleHair/femaleFringe.png";
+  static const femaleBread="assets/images/femaleHair/femaleBread.png";
+  static const femaleMediumLength="assets/images/femaleHair/femaleMediumLength.png";
+  static const femalePixieCut="assets/images/femaleHair/femalePixieCut.png";
 }
