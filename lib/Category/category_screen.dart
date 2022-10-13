@@ -33,7 +33,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
     ServiceListModel(serviceName: 'French Crop',serviceGender: 'Female', serviceImage: AppImage.femaleFrenchCrop),
     ServiceListModel(serviceName: 'Faux Hawk',serviceGender: 'Female', serviceImage: AppImage.femaleFauxHawk),
     ServiceListModel(serviceName: 'Fringe',serviceGender: 'Female', serviceImage: AppImage.femaleFringe),
-    ServiceListModel(serviceName: 'Buzz Cut',serviceGender: 'Female', serviceImage: AppImage.buzzCut),
+    ServiceListModel(serviceName: 'Buzz Cut',serviceGender: 'Female', serviceImage: AppImage.femaleBuzzCut),
     ServiceListModel(serviceName: 'Female Bread',serviceGender: 'Female', serviceImage: AppImage.femaleBread),
     ServiceListModel(serviceName: 'Pixie Cut',serviceGender: 'Female', serviceImage: AppImage.femalePixieCut),
     ServiceListModel(serviceName: 'Crew Cut',serviceGender: 'Female', serviceImage: AppImage.femaleCrewCut),

@@ -35,7 +35,6 @@ class PushNotification extends ChangeNotifier{
       //     android: androidChannelSpecifics, iOS: iOSChannelSpecifics);
       // localNotifPlugin.show(0, notification?.title, notification?.body, platformChannelSpecifics)
 
-
       if (notification != null) {
         flutterLocalNotificationsPlugin.show(
             notification.hashCode,
@@ -48,7 +47,7 @@ class PushNotification extends ChangeNotifier{
                 color: Colors.blue,
                 icon: "@mipmap/ic_launcher",
               ),
-              iOS: DarwinNotificationDetails(),
+              iOS: const DarwinNotificationDetails(),
             ));
       }
     });

@@ -28,6 +28,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   TextEditingController nameController = TextEditingController();
   TextEditingController mobileController = TextEditingController();
 
+
   File? file;
   var url = '';
 

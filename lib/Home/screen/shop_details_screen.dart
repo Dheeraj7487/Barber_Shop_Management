@@ -32,7 +32,7 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> with SingleTicker
     Text("Rating"),
   ];
 
-  String? userName;
+  String? userName,userPhoneNumber,userEmail;
 
   Future shopDetailsCheck() async{
     var shopQuerySnapshot = await FirebaseCollection().userCollection.where('userEmail',
@@ -41,6 +41,8 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> with SingleTicker
     for(var snapShot in shopQuerySnapshot.docChanges){
       setState(() {
         userName = snapShot.doc.get('userName');
+        userPhoneNumber = snapShot.doc.get('userMobile');
+        userEmail = snapShot.doc.get('userEmail');
       });
     }
   }
@@ -278,7 +280,7 @@ class _ShopDetailsScreenState extends State<ShopDetailsScreen> with SingleTicker
                                 ),
                                 GestureDetector(
                                   onTap: (){
-                                    Navigator.push(context, MaterialPageRoute(builder: (context)=> AppointmentBookScreen(snapshotData: widget.snapshotData,)));
+                                    Navigator.push(context, MaterialPageRoute(builder: (context)=> AppointmentBookScreen(snapshotData: widget.snapshotData,userEmail: userEmail,userMobile: userPhoneNumber,)));
                                   },
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),

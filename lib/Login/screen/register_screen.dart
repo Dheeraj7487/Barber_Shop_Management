@@ -65,7 +65,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void selectImage(BuildContext context) async{
-    //Pick Image File
+    // Pick Image File
     FilePickerResult? result = await FilePicker.platform.pickFiles(
         allowMultiple: false,
         type: FileType.image

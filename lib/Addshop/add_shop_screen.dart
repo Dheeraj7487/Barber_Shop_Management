@@ -10,6 +10,7 @@ import 'package:barber_booking_management/mixin/button_mixin.dart';
 import 'package:barber_booking_management/mixin/textfield_mixin.dart';
 import 'package:barber_booking_management/utils/app_color.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -44,8 +45,12 @@ class _AddShopScreenState extends State<AddShopScreen> {
   TextEditingController contactController = TextEditingController();
   TextEditingController barberContactController = TextEditingController();
   TextEditingController shopEmailController = TextEditingController();
+  File? barberFile,shopImageFile,coverShopImageFile;
+  String coverShopImageName ='';
+  String barberImageName ='';
+  String shopImageName ='';
 
-  File? barberImage,shopImage,shopCoverPage;
+  //File? barberImage,shopImage,shopCoverPage;
   final _formKey = GlobalKey<FormState>();
   final addPlaceController=TextEditingController();
   final Set<Marker> markers = {};
@@ -57,21 +62,63 @@ class _AddShopScreenState extends State<AddShopScreen> {
     mapController = controller;
   }
 
+  void selectBarberImage(BuildContext context) async{
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+        allowMultiple: false,
+        type: FileType.image
+    );
+    if(result == null) return;
+    final filePath = result.files.single.path;
+    File compressImage = await Provider.of<AddShopProvider>(context,listen: false).imageSizeCompress(image: File(filePath!));
+    setState(() {
+      barberFile = compressImage;
+      barberImageName = result.files.first.name;
+    });
+  }
+
+  void selectCoverShopImage(BuildContext context) async{
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+        allowMultiple: false,
+        type: FileType.image
+    );
+    if(result == null) return;
+    final filePath = result.files.single.path;
+    File compressImage = await Provider.of<AddShopProvider>(context,listen: false).imageSizeCompress(image: File(filePath!));
+    setState(() {
+      coverShopImageFile = compressImage;
+      coverShopImageName = result.files.first.name;
+    });
+  }
+
+  void selectShopImage(BuildContext context) async{
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+        allowMultiple: false,
+        type: FileType.image
+    );
+    if(result == null) return;
+    final filePath = result.files.single.path;
+    File compressImage = await Provider.of<AddShopProvider>(context,listen: false).imageSizeCompress(image: File(filePath!));
+    setState(() {
+      shopImageFile = compressImage;
+      shopImageName = result.files.first.name;
+    });
+  }
+
   void uploadFile(context) async {
     Provider.of<LoadingProvider>(context,listen: false).startLoading();
     var providerData = Provider.of<AddShopProvider>(context,listen: false);
     //Store Image in firebase database
-    if (Provider.of<AddShopProvider>(context,listen: false).barberFile == null) return;
-    final barberImageDestination = 'barber/${providerData.barberImageName}';
-    final shopDestination = 'shop/${providerData.shopImageName}';
-    final shopCoverDestination = 'coverShop/${providerData.coverShopImageName}';
+    if (barberFile == null) return;
+    final barberImageDestination = 'barber/${barberImageName}';
+    final shopDestination = 'shop/${shopImageName}';
+    final shopCoverDestination = 'coverShop/${coverShopImageName}';
     try {
       final barberRef = FirebaseStorage.instance.ref().child(barberImageDestination);
       final shopRef = FirebaseStorage.instance.ref().child(shopDestination);
       final coverShopRef = FirebaseStorage.instance.ref().child(shopCoverDestination);
-      UploadTask barberUploadTask =  barberRef.putFile(Provider.of<AddShopProvider>(context,listen: false).barberFile!);
-      UploadTask shopUploadTask =  shopRef.putFile(Provider.of<AddShopProvider>(context,listen: false).barberFile!);
-      UploadTask coverUploadTask =  coverShopRef.putFile(Provider.of<AddShopProvider>(context,listen: false).barberFile!);
+      UploadTask barberUploadTask =  barberRef.putFile(barberFile!);
+      UploadTask shopUploadTask =  shopRef.putFile(shopImageFile!);
+      UploadTask coverUploadTask =  coverShopRef.putFile(coverShopImageFile!);
       final snapshot1 = await barberUploadTask.whenComplete(() {});
       final snapshot2 = await shopUploadTask.whenComplete(() {});
       final snapshot3 = await coverUploadTask.whenComplete(() {});
@@ -116,7 +163,7 @@ class _AddShopScreenState extends State<AddShopScreen> {
             fcmToken: snapshot.doc.get('fcmToken'),
             userMobile: snapshot.doc.get('userMobile'),
             userImage: snapshot.doc.get('userImage'),
-          userType: snapshot.doc.get('userType')
+            userType: snapshot.doc.get('userType')
         );
 
         AddShopDetailFirebase().
@@ -199,8 +246,8 @@ class _AddShopScreenState extends State<AddShopScreen> {
     );
 
     if (pickedOpeningTime != null && pickedOpeningTime != Provider.of<AddShopProvider>(context,listen: false).selectedOpeningTime ) {
-        Provider.of<AddShopProvider>(context,listen: false).selectedOpeningTime = pickedOpeningTime!;
-        setState((){});
+      Provider.of<AddShopProvider>(context,listen: false).selectedOpeningTime = pickedOpeningTime!;
+      setState((){});
     }
   }
 
@@ -251,415 +298,415 @@ class _AddShopScreenState extends State<AddShopScreen> {
             key: _formKey,
             child: Consumer<AddShopProvider>(
                 builder: (BuildContext context, snapshot, Widget? child) {
-                return Column(
-                  children: [
-                    TextFieldMixin().textFieldWidget(
-                      cursorColor: Colors.black,
-                      controller: shopNameController,
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.text,
-                      hintText: "Enter Shop name",
-                      prefixIcon: const Icon(Icons.shopping_basket_outlined,color: AppColor.appColor,size: 20),
-                      validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            value.trim().isEmpty) {
-                          return 'Please enter shop name';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    TextFieldMixin().textFieldWidget(
-                      cursorColor: Colors.black,
-                      controller: barberNameController,
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.text,
-                      hintText: "Enter barber name",
-                      prefixIcon: const Icon(Icons.person_outline,color: AppColor.appColor,size: 20),
-                      validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            value.trim().isEmpty) {
-                          return 'Please enter barber name';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    TextFieldMixin().textFieldWidget(
-                      cursorColor: Colors.black,
-                      controller: shopEmailController,
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.emailAddress,
-                      hintText: "Enter shop email",
-                      prefixIcon: const Icon(Icons.email_outlined,color: AppColor.appColor,size: 20),
-                      validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            value.trim().isEmpty) {
-                          return 'Please enter shop email';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    TextFieldMixin().textFieldWidget(
-                      cursorColor: Colors.black,
-                      controller: contactController,
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.number,
-                      hintText: "Enter Contact Number",
-                      prefixIcon: const Icon(Icons.phone_android_outlined,color: AppColor.appColor,size: 20),
-                      validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            value.trim().isEmpty) {
-                          return 'Please enter phone number';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    TextFieldMixin().textFieldWidget(
-                      cursorColor: Colors.black,
-                      controller: shopDescriptionController,
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.text,
-                      hintText: "Enter Shop Description",
-                      prefixIcon: const Icon(Icons.description_outlined,color: AppColor.appColor,size: 20),
-                      validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            value.trim().isEmpty) {
-                          return 'Please enter shop description';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 10),
-                    TextFieldMixin().textFieldWidget(
-                      cursorColor: Colors.black,
-                      controller: websiteController,
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.text,
-                      hintText: "Enter shop website url",
-                      prefixIcon: const Icon(Icons.web_outlined,color: AppColor.appColor,size: 20),
-                    ),
-                    const SizedBox(height: 10),
-                    TextFieldMixin().textFieldWidget(
-                      cursorColor: Colors.black,
-                      controller: addressController,
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.text,
-                      hintText: "Enter address",
-                      prefixIcon: const Icon(Icons.location_on_outlined,color: AppColor.appColor,size: 20,),
-                      validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            value.trim().isEmpty) {
-                          return 'Please enter address';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 10),
-                    TextFieldMixin().textFieldWidget(
-                      cursorColor: Colors.black,
-                      controller: priceController,
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.number,
-                      hintText: "Enter price",
-                      prefixIcon: const Icon(Icons.price_change,color: AppColor.appColor,size: 20,),
-                      validator: (value) {
-                        if (value == null ||
-                            value.isEmpty ||
-                            value.trim().isEmpty) {
-                          return 'Please enter price';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.only(left: 20,top: 5,bottom: 5,right: 20),
-                      decoration: BoxDecoration(
-                          color: AppColor.textFieldColor,
-                          borderRadius: BorderRadius.circular(10)
-                      ),
-
-                      child: DropdownButtonFormField(
-                        decoration: const InputDecoration(
-                            border: UnderlineInputBorder(borderSide: BorderSide.none)),
-                        value: snapshot.selectHairStyle,
+                  return Column(
+                    children: [
+                      TextFieldMixin().textFieldWidget(
+                        cursorColor: Colors.black,
+                        controller: shopNameController,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.text,
+                        hintText: "Enter Shop name",
+                        prefixIcon: const Icon(Icons.shopping_basket_outlined,color: AppColor.appColor,size: 20),
                         validator: (value) {
-                          if (value == null) {
-                            return 'This field is required';
+                          if (value == null ||
+                              value.isEmpty ||
+                              value.trim().isEmpty) {
+                            return 'Please enter shop name';
                           }
                           return null;
                         },
-                        hint: const Text('Select Hair Category',style: TextStyle(fontSize: 13)),
-                        isExpanded: true,
-                        isDense: true,
-                        style: TextStyle(color: AppColor.blackColor.withOpacity(0.5),fontSize: 13),
-                        icon: const Icon(Icons.arrow_drop_down,color: AppColor.appColor),
-                        onChanged: (String? newValue) {
-                          snapshot.selectHairStyle = newValue!;
-                          snapshot.getHairCategory;
-                        },
-                        items: AddShopProvider().selectHairStyleList
-                            .map<DropdownMenuItem<String>>((String leaveName) {
-                          return DropdownMenuItem<String>(
-                              value: leaveName,
-                              child: Row(
-                                children: [
-                                  Text(leaveName)
-                                ],
-                              )
-                          );
-                        }).toList(),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    Container(
-                      padding: const EdgeInsets.only(left: 20,top: 5,bottom: 5,right: 20),
-                      decoration: BoxDecoration(
-                          color: AppColor.textFieldColor,
-                          borderRadius: BorderRadius.circular(10)
-                      ),
-
-                      child: DropdownButtonFormField(
-                        decoration: const InputDecoration(
-                            border: UnderlineInputBorder(borderSide: BorderSide.none)),
-                        value: snapshot.selectGender,
+                      const SizedBox(height: 10),
+                      TextFieldMixin().textFieldWidget(
+                        cursorColor: Colors.black,
+                        controller: barberNameController,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.text,
+                        hintText: "Enter barber name",
+                        prefixIcon: const Icon(Icons.person_outline,color: AppColor.appColor,size: 20),
                         validator: (value) {
-                          if (value == null) {
-                            return 'This field is required';
+                          if (value == null ||
+                              value.isEmpty ||
+                              value.trim().isEmpty) {
+                            return 'Please enter barber name';
                           }
                           return null;
                         },
-                        hint: const Text('Select Gender',style: TextStyle(fontSize: 13)),
-                        isExpanded: true,
-                        isDense: true,
-                        style: TextStyle(color: AppColor.blackColor.withOpacity(0.5),fontSize: 13),
-                        icon: const Icon(Icons.arrow_drop_down,color: AppColor.appColor,),
-                        onChanged: (String? newValue) {
-                          snapshot.selectGender = newValue!;
-                          snapshot.getGender;
-                        },
-                        items: AddShopProvider().selectGenderList
-                            .map<DropdownMenuItem<String>>((String gender) {
-                          return DropdownMenuItem<String>(
-                              value: gender,
-                              child: Row(
-                                children: [
-                                  Text(gender)
-                                ],
-                              )
-                          );
-                        }).toList(),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        GestureDetector(
-                          onTap : () {
-                            selectOpeningTime(context);
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: AppColor.textFieldColor,
-                                borderRadius: BorderRadius.circular(5)
-                            ),
-                            padding: const EdgeInsets.only(top:15,bottom: 15,left: 10,right: 10),
-                            child: Text(pickedOpeningTime == null ? "Opening Hour" :
-                            Provider.of<AddShopProvider>(context,listen: false).selectedOpeningTime.format(context),
-                              style: TextStyle(color: AppColor.blackColor.withOpacity(0.5)),),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap : () {
-                            selectClosingTime(context);
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                color: AppColor.textFieldColor,
-                                borderRadius: BorderRadius.circular(10)
-                            ),
-                            padding: const EdgeInsets.only(top:15,bottom: 15,left: 10,right: 10),
-                            child: Text(pickedClosingTime == null ? "Closing Hour" :
-                            Provider.of<AddShopProvider>(context,listen: false).selectedClosingTime.format(context),
-                                style: TextStyle(color: AppColor.blackColor.withOpacity(0.5))),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: GestureDetector(
-                              onTap: (){
-                                snapshot.selectBarberImage(context);
-                              },
-                              child: snapshot.barberFile == null ?
-                              Container(
-                                  padding: const EdgeInsets.all(10),
-                                  color: AppColor.textFieldColor,
-                                  height: MediaQuery.of(context).size.height/8,
-                                  width: MediaQuery.of(context).size.height/8,
-                                  child:  Center(child: Text('Pick barber Image',style: TextStyle(color: AppColor.blackColor.withOpacity(0.5)),textAlign: TextAlign.center,))) :
-                              Image.file(
-                                snapshot.barberFile!,
-                                height: MediaQuery.of(context).size.height/8,
-                                width: MediaQuery.of(context).size.height/8,
-                                fit: BoxFit.fill,)
-                          ),
-                        ),
-
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: GestureDetector(
-                              onTap: (){
-                                snapshot.selectShopImage(context);
-                              },
-                              child: snapshot.shopImage == null ?
-                              Container(
-                                  padding: const EdgeInsets.all(10),
-                                  color: AppColor.textFieldColor,
-                                  height: MediaQuery.of(context).size.height/8,
-                                  width: MediaQuery.of(context).size.height/8,
-                                  child: Center(child: Text('Pick Shop Image',style: TextStyle(color: AppColor.blackColor.withOpacity(0.5)),textAlign: TextAlign.center,))) :
-                              Image.file(
-                                snapshot.shopImage!,
-                                height: MediaQuery.of(context).size.height/8,
-                                width: MediaQuery.of(context).size.height/8,
-                                fit: BoxFit.fill,)
-                          ),
-                        ),
-
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: GestureDetector(
-                              onTap: (){
-                                snapshot.selectCoverShopImage(context);
-                              },
-                              child: snapshot.coverShopImage == null ?
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                  color: AppColor.textFieldColor,
-                                  height: MediaQuery.of(context).size.height/8,
-                                  width: MediaQuery.of(context).size.height/8,
-                                  child: Center(child: Text('Pick Cover Image',style: TextStyle(color: AppColor.blackColor.withOpacity(0.5)),textAlign: TextAlign.center,))) :
-                              Image.file(
-                                snapshot.coverShopImage!,
-                                height: MediaQuery.of(context).size.height/8,
-                                width: MediaQuery.of(context).size.height/8,
-                                fit: BoxFit.fill,)
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    FutureBuilder<LocationData?>(
-                        future: CurrentLocation.instance.currentLocation(),
-                        builder: (context, locationSnapshot) {
-                          if(!locationSnapshot.hasData){
-                            return const Center(child: CircularProgressIndicator());
+                      const SizedBox(height: 10),
+                      TextFieldMixin().textFieldWidget(
+                        cursorColor: Colors.black,
+                        controller: shopEmailController,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.emailAddress,
+                        hintText: "Enter shop email",
+                        prefixIcon: const Icon(Icons.email_outlined,color: AppColor.appColor,size: 20),
+                        validator: (value) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              value.trim().isEmpty) {
+                            return 'Please enter shop email';
                           }
-                          else if(locationSnapshot.connectionState == ConnectionState.done){
-                            if(locationSnapshot.hasData){
-                              markers.add(Marker(
-                                markerId: const MarkerId("1"),
-                                onTap: (){},
-                                infoWindow: const InfoWindow(title: "Current Location"),
-                                position: LatLng(locationSnapshot.data!.latitude!,locationSnapshot.data!.longitude!),
-                                icon: BitmapDescriptor.defaultMarkerWithHue(
-                                  BitmapDescriptor.hueRed,
-                                ),
-                              ));
-                              return Stack(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(20)
-                                    ),
-                                    height: 150,width: double.infinity,
-                                    child: GoogleMap(
-                                      zoomControlsEnabled: false,
-                                      onMapCreated: _onMapCreated,
-                                      initialCameraPosition: CameraPosition(
-                                        target: LatLng(locationSnapshot.data!.latitude!,locationSnapshot.data!.longitude!),
-                                        zoom: 11.0,
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      TextFieldMixin().textFieldWidget(
+                        cursorColor: Colors.black,
+                        controller: contactController,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.number,
+                        hintText: "Enter Contact Number",
+                        prefixIcon: const Icon(Icons.phone_android_outlined,color: AppColor.appColor,size: 20),
+                        validator: (value) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              value.trim().isEmpty) {
+                            return 'Please enter phone number';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 10),
+                      TextFieldMixin().textFieldWidget(
+                        cursorColor: Colors.black,
+                        controller: shopDescriptionController,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.text,
+                        hintText: "Enter Shop Description",
+                        prefixIcon: const Icon(Icons.description_outlined,color: AppColor.appColor,size: 20),
+                        validator: (value) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              value.trim().isEmpty) {
+                            return 'Please enter shop description';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 10),
+                      TextFieldMixin().textFieldWidget(
+                        cursorColor: Colors.black,
+                        controller: websiteController,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.text,
+                        hintText: "Enter shop website url",
+                        prefixIcon: const Icon(Icons.web_outlined,color: AppColor.appColor,size: 20),
+                      ),
+                      const SizedBox(height: 10),
+                      TextFieldMixin().textFieldWidget(
+                        cursorColor: Colors.black,
+                        controller: addressController,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.text,
+                        hintText: "Enter address",
+                        prefixIcon: const Icon(Icons.location_on_outlined,color: AppColor.appColor,size: 20,),
+                        validator: (value) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              value.trim().isEmpty) {
+                            return 'Please enter address';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 10),
+                      TextFieldMixin().textFieldWidget(
+                        cursorColor: Colors.black,
+                        controller: priceController,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.number,
+                        hintText: "Enter price",
+                        prefixIcon: const Icon(Icons.price_change,color: AppColor.appColor,size: 20,),
+                        validator: (value) {
+                          if (value == null ||
+                              value.isEmpty ||
+                              value.trim().isEmpty) {
+                            return 'Please enter price';
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.only(left: 20,top: 5,bottom: 5,right: 20),
+                        decoration: BoxDecoration(
+                            color: AppColor.textFieldColor,
+                            borderRadius: BorderRadius.circular(10)
+                        ),
+
+                        child: DropdownButtonFormField(
+                          decoration: const InputDecoration(
+                              border: UnderlineInputBorder(borderSide: BorderSide.none)),
+                          value: snapshot.selectHairStyle,
+                          validator: (value) {
+                            if (value == null) {
+                              return 'This field is required';
+                            }
+                            return null;
+                          },
+                          hint: const Text('Select Hair Category',style: TextStyle(fontSize: 13)),
+                          isExpanded: true,
+                          isDense: true,
+                          style: TextStyle(color: AppColor.blackColor.withOpacity(0.5),fontSize: 13),
+                          icon: const Icon(Icons.arrow_drop_down,color: AppColor.appColor),
+                          onChanged: (String? newValue) {
+                            snapshot.selectHairStyle = newValue!;
+                            snapshot.getHairCategory;
+                          },
+                          items: AddShopProvider().selectHairStyleList
+                              .map<DropdownMenuItem<String>>((String leaveName) {
+                            return DropdownMenuItem<String>(
+                                value: leaveName,
+                                child: Row(
+                                  children: [
+                                    Text(leaveName)
+                                  ],
+                                )
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.only(left: 20,top: 5,bottom: 5,right: 20),
+                        decoration: BoxDecoration(
+                            color: AppColor.textFieldColor,
+                            borderRadius: BorderRadius.circular(10)
+                        ),
+
+                        child: DropdownButtonFormField(
+                          decoration: const InputDecoration(
+                              border: UnderlineInputBorder(borderSide: BorderSide.none)),
+                          value: snapshot.selectGender,
+                          validator: (value) {
+                            if (value == null) {
+                              return 'This field is required';
+                            }
+                            return null;
+                          },
+                          hint: const Text('Select Gender',style: TextStyle(fontSize: 13)),
+                          isExpanded: true,
+                          isDense: true,
+                          style: TextStyle(color: AppColor.blackColor.withOpacity(0.5),fontSize: 13),
+                          icon: const Icon(Icons.arrow_drop_down,color: AppColor.appColor,),
+                          onChanged: (String? newValue) {
+                            snapshot.selectGender = newValue!;
+                            snapshot.getGender;
+                          },
+                          items: AddShopProvider().selectGenderList
+                              .map<DropdownMenuItem<String>>((String gender) {
+                            return DropdownMenuItem<String>(
+                                value: gender,
+                                child: Row(
+                                  children: [
+                                    Text(gender)
+                                  ],
+                                )
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          GestureDetector(
+                            onTap : () {
+                              selectOpeningTime(context);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: AppColor.textFieldColor,
+                                  borderRadius: BorderRadius.circular(5)
+                              ),
+                              padding: const EdgeInsets.only(top:15,bottom: 15,left: 10,right: 10),
+                              child: Text(pickedOpeningTime == null ? "Opening Hour" :
+                              Provider.of<AddShopProvider>(context,listen: false).selectedOpeningTime.format(context),
+                                style: TextStyle(color: AppColor.blackColor.withOpacity(0.5)),),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap : () {
+                              selectClosingTime(context);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: AppColor.textFieldColor,
+                                  borderRadius: BorderRadius.circular(10)
+                              ),
+                              padding: const EdgeInsets.only(top:15,bottom: 15,left: 10,right: 10),
+                              child: Text(pickedClosingTime == null ? "Closing Hour" :
+                              Provider.of<AddShopProvider>(context,listen: false).selectedClosingTime.format(context),
+                                  style: TextStyle(color: AppColor.blackColor.withOpacity(0.5))),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: GestureDetector(
+                                onTap: (){
+                                  selectBarberImage(context);
+                                },
+                                child: barberFile == null ?
+                                Container(
+                                    padding: const EdgeInsets.all(10),
+                                    color: AppColor.textFieldColor,
+                                    height: MediaQuery.of(context).size.height/8,
+                                    width: MediaQuery.of(context).size.height/8,
+                                    child:  Center(child: Text('Pick barber Image',style: TextStyle(color: AppColor.blackColor.withOpacity(0.5)),textAlign: TextAlign.center,))) :
+                                Image.file(
+                                  barberFile!,
+                                  height: MediaQuery.of(context).size.height/8,
+                                  width: MediaQuery.of(context).size.height/8,
+                                  fit: BoxFit.fill,)
+                            ),
+                          ),
+
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: GestureDetector(
+                                onTap: (){
+                                  selectShopImage(context);
+                                },
+                                child: shopImageFile == null ?
+                                Container(
+                                    padding: const EdgeInsets.all(10),
+                                    color: AppColor.textFieldColor,
+                                    height: MediaQuery.of(context).size.height/8,
+                                    width: MediaQuery.of(context).size.height/8,
+                                    child: Center(child: Text('Pick Shop Image',style: TextStyle(color: AppColor.blackColor.withOpacity(0.5)),textAlign: TextAlign.center,))) :
+                                Image.file(
+                                  shopImageFile!,
+                                  height: MediaQuery.of(context).size.height/8,
+                                  width: MediaQuery.of(context).size.height/8,
+                                  fit: BoxFit.fill,)
+                            ),
+                          ),
+
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: GestureDetector(
+                                onTap: (){
+                                  selectCoverShopImage(context);
+                                },
+                                child: coverShopImageFile == null ?
+                                Container(
+                                    padding: const EdgeInsets.all(10),
+                                    color: AppColor.textFieldColor,
+                                    height: MediaQuery.of(context).size.height/8,
+                                    width: MediaQuery.of(context).size.height/8,
+                                    child: Center(child: Text('Pick Cover Image',style: TextStyle(color: AppColor.blackColor.withOpacity(0.5)),textAlign: TextAlign.center,))) :
+                                Image.file(
+                                  coverShopImageFile!,
+                                  height: MediaQuery.of(context).size.height/8,
+                                  width: MediaQuery.of(context).size.height/8,
+                                  fit: BoxFit.fill,)
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      FutureBuilder<LocationData?>(
+                          future: CurrentLocation.instance.currentLocation(),
+                          builder: (context, locationSnapshot) {
+                            if(!locationSnapshot.hasData){
+                              return const Center(child: CircularProgressIndicator());
+                            }
+                            else if(locationSnapshot.connectionState == ConnectionState.done){
+                              if(locationSnapshot.hasData){
+                                markers.add(Marker(
+                                  markerId: const MarkerId("1"),
+                                  onTap: (){},
+                                  infoWindow: const InfoWindow(title: "Current Location"),
+                                  position: LatLng(locationSnapshot.data!.latitude!,locationSnapshot.data!.longitude!),
+                                  icon: BitmapDescriptor.defaultMarkerWithHue(
+                                    BitmapDescriptor.hueRed,
+                                  ),
+                                ));
+                                return Stack(
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(20)
                                       ),
-                                      markers: markers,
+                                      height: 150,width: double.infinity,
+                                      child: GoogleMap(
+                                        zoomControlsEnabled: false,
+                                        onMapCreated: _onMapCreated,
+                                        initialCameraPosition: CameraPosition(
+                                          target: LatLng(locationSnapshot.data!.latitude!,locationSnapshot.data!.longitude!),
+                                          zoom: 11.0,
+                                        ),
+                                        markers: markers,
+                                      ),
                                     ),
-                                  ),
 
-                                  Positioned(
-                                    bottom: 10,left: 10,
-                                    child: InkWell(
-                                        child: Container(
-                                            padding: const EdgeInsets.all(10),
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(10),
-                                                color: Colors.white),
-                                            height: 40,
-                                            child: Row(
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: const [
-                                                Icon(Icons.add_location_alt_outlined,color: AppColor.appColor,size: 18,),
-                                                SizedBox(width: 5),
-                                                Text("Edit From Here",style: TextStyle(fontSize: 12)),
-                                              ],
-                                            )),
-                                        onTap: ()=>
-                                            Navigator.push(context, MaterialPageRoute(builder: (context)=>
-                                            const AddLocationToMapScreen())).then((value) {
-                                              snapshot.latitude=value.latitude.toString();
-                                              snapshot.longitude=value.longitude.toString();
-                                            })
+                                    Positioned(
+                                      bottom: 10,left: 10,
+                                      child: InkWell(
+                                          child: Container(
+                                              padding: const EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  color: Colors.white),
+                                              height: 40,
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: const [
+                                                  Icon(Icons.add_location_alt_outlined,color: AppColor.appColor,size: 18,),
+                                                  SizedBox(width: 5),
+                                                  Text("Edit From Here",style: TextStyle(fontSize: 12)),
+                                                ],
+                                              )),
+                                          onTap: ()=>
+                                              Navigator.push(context, MaterialPageRoute(builder: (context)=>
+                                              const AddLocationToMapScreen())).then((value) {
+                                                snapshot.latitude=value.latitude.toString();
+                                                snapshot.longitude=value.longitude.toString();
+                                              })
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              );
-                            } else {
+                                  ],
+                                );
+                              } else {
+                                return const Center(child: CircularProgressIndicator());
+                              }
+                            }
+                            else {
                               return const Center(child: CircularProgressIndicator());
                             }
                           }
-                          else {
-                            return const Center(child: CircularProgressIndicator());
-                          }
-                        }
-                    ),
-                    const SizedBox(height: 20),
-                    GestureDetector(
-                        onTap: () {
-                          if(_formKey.currentState!.validate())
-                          {
-                            if(snapshot.barberFile != null && snapshot.shopImage != null && snapshot.coverShopImage != null
-                                && Provider.of<AddShopProvider>(context,listen: false).longitude != '' &&
-                                Provider.of<AddShopProvider>(context,listen: false).latitude != ''){
-                              uploadFile(context);
-                            } else {
-                              AppUtils.instance.showToast(toastMessage: 'All field is required');
+                      ),
+                      const SizedBox(height: 20),
+                      GestureDetector(
+                          onTap: () {
+                            if(_formKey.currentState!.validate())
+                            {
+                              if(barberFile != null && shopImageFile != null && coverShopImageFile != null
+                                  && Provider.of<AddShopProvider>(context,listen: false).longitude != '' &&
+                                  Provider.of<AddShopProvider>(context,listen: false).latitude != ''){
+                                uploadFile(context);
+                              } else {
+                                AppUtils.instance.showToast(toastMessage: 'All field is required');
+                              }
                             }
-                          }
-                        },
-                        child: ButtonMixin().appButton(text: 'Add Shop'))
+                          },
+                          child: ButtonMixin().appButton(text: 'Add Shop'))
 
-                  ],
-                );
-              }
+                    ],
+                  );
+                }
             ),
           ),
         ),

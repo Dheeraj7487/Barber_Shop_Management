@@ -14,8 +14,9 @@ import '../firebase/book_appointment.dart';
 
 class AppointmentBookScreen extends StatefulWidget {
 
-  var snapshotData;
-  AppointmentBookScreen({Key? key,required this.snapshotData}) : super(key: key);
+  var snapshotData,userEmail,userMobile;
+  AppointmentBookScreen({Key? key,required this.snapshotData,required this.userEmail,
+  required this.userMobile}) : super(key: key);
 
   @override
   State<AppointmentBookScreen> createState() => _AppointmentBookScreenState();
@@ -46,6 +47,7 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
     }
   }
 
+
   @override
   void initState() {
     super.initState();
@@ -73,7 +75,7 @@ class _AppointmentBookScreenState extends State<AppointmentBookScreen> {
       'description': 'Description Shop',
       'retry': {'enabled': true, 'max_count': 1},
       'send_sms_hash': true,
-      'prefill': {'contact': widget.snapshotData['contactNumber'], 'email': widget.snapshotData['shopEmail']},
+      'prefill': {'contact': widget.userMobile, 'email': widget.userEmail},
       'external': {
         'wallets': ['paytm']
       }

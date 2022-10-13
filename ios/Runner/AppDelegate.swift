@@ -3,7 +3,6 @@ import Flutter
 import Firebase
 import GoogleMaps
 
-
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate, MessagingDelegate  {
   override func application(

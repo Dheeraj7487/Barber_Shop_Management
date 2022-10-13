@@ -28,40 +28,27 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
-	<key>UISupportedInterfaceOrientations</key>
 
-	<string>NSLocationWhenInUseUsageDescription</string>
+
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>NSLocationAlwaysUsageDescription</string>
+    <string>NSLocationWhenInUseUsageDescription</string>
     <key>NSLocationAlwaysUsageDescription</key>
+    <string>NSLocationAlwaysUsageDescription</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>NSLocationAlwaysAndWhenInUseUsageDescription</string>
 
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Explain why your app uses photo library</string>
-    <key>NSCameraUsageDescription</key>
-    <string>describe why your app needs access to the camera</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>describe why your app needs access to the microphone</string>
 
-    <key>LSApplicationQueriesSchemes</key>
+
+	<key>LSApplicationQueriesSchemes</key>
     <array>
-        <string>sms</string>
-        <string>tel</string>
-        <string>navigation</string>
+      <string>sms</string>
+      <string>tel</string>
+      <string>navigation</string>
     </array>
 
-    <key>LSApplicationQueriesSchemes</key>
-    <array>
-        <string>googlechromes</string>
-        <string>comgooglemaps</string>
-    </array>
-
-    <key>UIBackgroundModes</key>
-    <array>
-        <string>fetch</string>
-        <string>remote-notification</string>
-    </array>
-
-
+	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
@@ -78,5 +65,9 @@
 	<false/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+
+	<key>FirebaseAppDelegateProxyEnabled</key>
+    <false/>
+
 </dict>
 </plist>

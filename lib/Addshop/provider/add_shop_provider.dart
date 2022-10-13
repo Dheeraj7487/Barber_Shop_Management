@@ -5,10 +5,7 @@ import 'package:flutter_native_image/flutter_native_image.dart';
 
 class AddShopProvider extends ChangeNotifier{
   String? selectHairStyle,selectGender,selectState;
-  File? barberFile,shopImage,coverShopImage;
-  String coverShopImageName ='';
-  String barberImageName ='';
-  String shopImageName ='';
+
   String latitude="";
   String longitude="";
   TimeOfDay selectedOpeningTime = const TimeOfDay(hour: 9, minute: 0);
@@ -100,44 +97,5 @@ class AddShopProvider extends ChangeNotifier{
     return path;
   }
 
-  //Pick Image File
-  void selectBarberImage(BuildContext context) async{
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-        allowMultiple: false,
-        type: FileType.image
-    );
-    if(result == null) return;
-    final filePath = result.files.single.path;
-    File compressImage = await imageSizeCompress(image: File(filePath!));
-    barberFile = compressImage;
-    barberImageName = result.files.first.name;
-    notifyListeners();
-  }
-
-  void selectCoverShopImage(BuildContext context) async{
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-        allowMultiple: false,
-        type: FileType.image
-    );
-    if(result == null) return;
-    final filePath = result.files.single.path;
-    File compressImage = await imageSizeCompress(image: File(filePath!));
-    coverShopImage = compressImage;
-    coverShopImageName = result.files.first.name;
-    notifyListeners();
-  }
-
-  void selectShopImage(BuildContext context) async{
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-        allowMultiple: false,
-        type: FileType.image
-    );
-    if(result == null) return;
-    final filePath = result.files.single.path;
-    File compressImage = await imageSizeCompress(image: File(filePath!));
-    shopImage = compressImage;
-    shopImageName = result.files.first.name;
-    notifyListeners();
-  }
 
 }

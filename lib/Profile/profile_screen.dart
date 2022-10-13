@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import '../Login/provider/login_provider.dart';
 import '../Login/screen/login_screen.dart';
 import '../utils/app_color.dart';
 import '../utils/app_utils.dart';
@@ -170,6 +171,27 @@ class ProfileScreen extends StatelessWidget {
                                       }
                                       else if (value == 4) {
                                         FirebaseAuth.instance.signOut();
+                                        //     .then((value){
+                                        //
+                                        //   LoginProvider().addUserDetail(
+                                        //       uId: data['uid'],
+                                        //       userName: data['userName'],
+                                        //       userEmail: data['userEmail'], userMobile: data['userMobile'],
+                                        //       fcmToken: '',
+                                        //       userImage: data['userImage'], timestamp: Timestamp.now(),
+                                        //       shopDescription: data['shopDescription'], barberImage: data['barberImage'],
+                                        //       webSiteUrl: data['webSiteUrl'],
+                                        //       status: data['shopStatus'], barberName: data['barberName'],
+                                        //       gender: data['gender'], longitudeShop: data['longitude'],
+                                        //       shopImage: data['shopImage'], address: data['address'],
+                                        //       rating: data['rating'], shopName: data['shopName'],
+                                        //       hairCategory: data['hairCategory'], currentUser: data['currentUser'],
+                                        //       latitudeShop: data['latitude'], openingHour: data['openingHour'],
+                                        //       coverPageImage: data['coverPageImage'], contactNumber: data['contactNumber'],
+                                        //       price: data['price'],
+                                        //       userType: data['userType'], closingHour: data['closingHour']);
+                                        //
+                                        // });
                                         AppUtils.instance.clearPref().then((value) =>
                                             Navigator.pushAndRemoveUntil(
                                                 context,
@@ -324,7 +346,25 @@ class ProfileScreen extends StatelessWidget {
                                         Navigator.push(context,
                                             MaterialPageRoute(builder: (context)=>const AppointmentScreen()));
                                       } else if (value == 3) {
-                                        FirebaseAuth.instance.signOut();
+                                        FirebaseAuth.instance.signOut().then((value){
+                                          LoginProvider().addUserDetail(
+                                              uId: data['uid'],
+                                              userName: data['userName'],
+                                              userEmail: data['userEmail'], userMobile: data['userMobile'],
+                                              fcmToken: '',
+                                              userImage: data['userImage'], timestamp: Timestamp.now(),
+                                              shopDescription: data['shopDescription'], barberImage: data['barberImage'],
+                                              webSiteUrl: data['webSiteUrl'],
+                                              status: data['shopStatus'], barberName: data['barberName'],
+                                              gender: data['gender'], longitudeShop: data['longitude'],
+                                              shopImage: data['shopImage'], address: data['address'],
+                                              rating: data['rating'], shopName: data['shopName'],
+                                              hairCategory: data['hairCategory'], currentUser: data['currentUser'],
+                                              latitudeShop: data['latitude'], openingHour: data['openingHour'],
+                                              coverPageImage: data['coverPageImage'], contactNumber: data['contactNumber'],
+                                              price: data['price'],
+                                              userType: data['userType'], closingHour: data['closingHour']);
+                                        });
                                         AppUtils.instance.clearPref().then((value) =>
                                             Navigator.pushAndRemoveUntil(
                                                 context,
