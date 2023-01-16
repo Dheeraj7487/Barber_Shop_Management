@@ -176,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                           child: ButtonMixin().appButton(text: 'Login')),
 
-                      SizedBox(height: 20,),
+                      const SizedBox(height: 20,),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

@@ -67,7 +67,7 @@ class PushNotification extends ChangeNotifier{
     // debugPrint("Method called....... $opponentUserEmail");
     final msg = jsonEncode({
       "registration_ids": <String>[
-        "$notificationToken"
+        "$notificationToken",
       ],
       "notification": {
         "title": "$userName1",
